@@ -1,4 +1,7 @@
-import { chapter, requiredClueIds } from '../domain/gameData.js';
+import { campaign, chapter, requiredClueIds } from '../domain/gameData.js';
+
+const emptyStyleScores = () =>
+  Object.fromEntries(Object.keys(campaign.profiles).map((styleId) => [styleId, 0]));
 
 export function createInitialState() {
   return {
@@ -9,17 +12,31 @@ export function createInitialState() {
     links: [],
     briefing: [],
     briefingReady: false,
+    caseRecords: [],
+    styleScores: emptyStyleScores(),
     dialogue: null,
     message: '사건 파일 대기 중',
     ending: null
   };
 }
 
-export function startCase() {
+export function startCase(previousState = createInitialState()) {
+  const preserved = preserveCampaignState(previousState);
   return {
     ...createInitialState(),
+    ...preserved,
     screen: 'intro',
     message: `${chapter.code} 프롤로그`
+  };
+}
+
+export function showMenu(state) {
+  return {
+    ...state,
+    screen: 'menu',
+    selected: null,
+    dialogue: null,
+    message: campaign.title
   };
 }
 
@@ -255,14 +272,60 @@ export function chooseEnding(state, ending) {
       message: '사건 보고서를 완성한 뒤 말하는 방식을 선택하세요.'
     };
   }
+  const recordedState = recordCaseOutcome(state, ending, endingData);
   return {
-    ...state,
+    ...recordedState,
     screen: 'ending',
     ending,
     message: `사건 해결: ${endingData.title}`
   };
 }
 
+export function getDetectiveProfile(state) {
+  const entries = Object.entries(state.styleScores ?? {});
+  const best = entries.reduce(
+    (top, current) => (current[1] > top[1] ? current : top),
+    ['', 0]
+  );
+  if (!best[0] || best[1] === 0) return campaign.defaultProfile;
+  return campaign.profiles[best[0]] ?? campaign.defaultProfile;
+}
+
 export function linkKey(a, b) {
   return [a, b].sort().join('__');
+}
+
+function preserveCampaignState(state) {
+  return {
+    caseRecords: state.caseRecords ?? [],
+    styleScores: { ...emptyStyleScores(), ...(state.styleScores ?? {}) }
+  };
+}
+
+function recordCaseOutcome(state, ending, endingData) {
+  const alreadyRecorded = state.caseRecords.some((record) => record.caseId === chapter.id);
+  if (alreadyRecorded) return state;
+
+  const styleId = endingData.styleId ?? ending;
+  const profile = campaign.profiles[styleId] ?? campaign.defaultProfile;
+  return {
+    ...state,
+    caseRecords: [
+      ...state.caseRecords,
+      {
+        caseId: chapter.id,
+        code: chapter.code,
+        title: chapter.title,
+        ending,
+        endingTitle: endingData.title,
+        choice: endingData.choice,
+        styleId,
+        styleTitle: profile.title
+      }
+    ],
+    styleScores: {
+      ...state.styleScores,
+      [styleId]: (state.styleScores[styleId] ?? 0) + 1
+    }
+  };
 }

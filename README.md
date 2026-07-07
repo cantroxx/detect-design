@@ -4,10 +4,16 @@
 
 Current game:
 
-- Title: 디지털 탐정단: 사라진 학급 쿠폰
+- Title: 디지털 탐정단: 사라진 칭찬 쿠폰
 - Target: elementary grade 4
 - Format: static HTML/CSS/JavaScript
-- Flow: title dossier -> prologue -> dialogue-based clue collection -> evidence board -> ending choice
+- Flow: case file hub -> prologue -> dialogue-based clue collection -> evidence board -> case report -> ending choice -> detective style / next case preview
+
+Campaign note:
+
+- CASE 01 is playable.
+- The menu and ending now keep a case log and detective style record.
+- CASE 02 and CASE 03 are staged as follow-up case files so later work can branch from the player's CASE 01 style.
 
 ## Run Locally
 

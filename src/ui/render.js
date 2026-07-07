@@ -1,4 +1,4 @@
-import { chapter } from '../domain/gameData.js?v=20260707-briefing1';
+import { campaign, chapter } from '../domain/gameData.js?v=20260707-campaign1';
 import {
   advanceDialogue,
   advanceIntro,
@@ -6,6 +6,7 @@ import {
   chooseEnding,
   clearBriefing,
   createInitialState,
+  getDetectiveProfile,
   isSolved,
   linkKey,
   openBriefing,
@@ -13,10 +14,11 @@ import {
   removeBriefingLine,
   selectClue,
   selectBriefingLine,
+  showMenu,
   skipIntro,
   submitBriefing,
   startCase
-} from '../application/gameEngine.js?v=20260707-briefing1';
+} from '../application/gameEngine.js?v=20260707-campaign1';
 
 let state = createInitialState();
 
@@ -32,9 +34,11 @@ function onClick(event) {
   const root = document.querySelector('#app');
   const type = action.dataset.action;
   const value = action.dataset.value;
+  const previousScreen = state.screen;
 
-  if (type === 'start') state = startCase();
+  if (type === 'start') state = startCase(state);
   else if (type === 'reset') state = createInitialState();
+  else if (type === 'menu') state = showMenu(state);
   else if (type === 'intro-next') state = advanceIntro(state);
   else if (type === 'intro-skip') state = skipIntro(state);
   else if (type === 'scene') state = { ...state, screen: 'scene', message: chapter.mission.scene };
@@ -51,6 +55,7 @@ function onClick(event) {
   else if (type === 'ending') state = chooseEnding(state, value);
 
   render(root);
+  if (state.screen !== previousScreen) window.scrollTo(0, 0);
 }
 
 function render(root) {
@@ -95,21 +100,55 @@ function renderMenu() {
   return `
     <section class="menuScreen">
       <div class="menuScan" aria-hidden="true"></div>
-      <div class="menuCopy">
-        <p class="caseCode">${chapter.code}</p>
-        <h2>${chapter.title}</h2>
-        <p class="menuSub">${chapter.subtitle}</p>
-        <p>
-          조회 전 조용한 교실. 칭찬 쿠폰 상자의 숫자가 맞지 않습니다.
-          서로 의심하기 전에, 탐정단은 기록과 말을 차례로 확인해야 합니다.
-        </p>
-        <button class="primaryAction" data-action="start">새 사건 시작</button>
-      </div>
-      <div class="menuDossier" aria-hidden="true">
-        <span>MISSION</span>
-        <b>${chapter.mission.menu}</b>
+      <div class="menuLayout">
+        <div class="menuCopy">
+          <p class="caseCode">${chapter.code}</p>
+          <h2>${chapter.title}</h2>
+          <p class="menuSub">${chapter.subtitle}</p>
+          <p>
+            조회 전 조용한 4학년 교실. 칭찬 쿠폰 상자의 숫자가 맞지 않습니다.
+            서로 의심하기 전에, 탐정단은 기록과 말을 차례로 확인해야 합니다.
+          </p>
+          <button class="primaryAction" data-action="start">새 사건 시작</button>
+        </div>
+        ${renderCampaignPanel()}
       </div>
     </section>
+  `;
+}
+
+function renderCampaignPanel() {
+  const profile = getDetectiveProfile(state);
+  return `
+    <aside class="caseFiles" aria-label="${campaign.title}">
+      <div class="terminalHeader">
+        <span>${campaign.title}</span>
+        <b>${state.caseRecords.length}/${campaign.cases.length}</b>
+      </div>
+      <p>${campaign.subtitle}</p>
+      <div class="detectiveBadge">
+        <span>${profile.trait}</span>
+        <b>${profile.title}</b>
+        <small>${profile.body}</small>
+      </div>
+      <div class="caseFileList">
+        ${campaign.cases.map((caseItem, index) => renderCaseFile(caseItem, index)).join('')}
+      </div>
+    </aside>
+  `;
+}
+
+function renderCaseFile(caseItem, index) {
+  const record = state.caseRecords.find((item) => item.caseId === caseItem.id);
+  const solvedFirstCase = state.caseRecords.some((item) => item.caseId === chapter.id);
+  const isNextOpen = caseItem.status === 'next' && solvedFirstCase;
+  const status = record ? '해결됨' : index === 0 ? '진행 가능' : isNextOpen ? '다음 사건' : '잠김';
+  return `
+    <article class="caseFile ${record ? 'solved' : ''} ${isNextOpen ? 'nextOpen' : ''}">
+      <span>${caseItem.code} · ${status}</span>
+      <h3>${caseItem.title}</h3>
+      <p>${record ? `${record.styleTitle} 기록으로 종결` : caseItem.summary}</p>
+    </article>
   `;
 }
 
@@ -280,7 +319,7 @@ function renderBriefing() {
       <div class="reportDesk">
         <section class="reportPaper">
           <div class="reportStamp">DRAFT</div>
-          <h3>4학년 2반 쿠폰 사건 보고서</h3>
+          <h3>4학년 쿠폰 사건 보고서</h3>
           <ol class="reportSlots">
             ${chapter.briefing.slots.map((slot, index) => renderReportSlot(slot, index)).join('')}
           </ol>
@@ -358,13 +397,50 @@ function renderFinalChoice() {
 
 function renderEnding() {
   const ending = chapter.endings[state.ending];
+  const profile = getDetectiveProfile(state);
   return `
     <section class="endingScreen">
       <p class="caseCode">CASE CLOSED</p>
       <h2>${ending.title}</h2>
       <p>${ending.body}</p>
       <div class="lesson">${ending.lesson}</div>
-      <button class="primaryAction" data-action="reset">다시 플레이</button>
+      <div class="endingGrid">
+        <section class="styleReport">
+          <p class="caseCode">DETECTIVE STYLE</p>
+          <h3>${profile.title}</h3>
+          <b>${profile.trait}</b>
+          <p>${profile.body}</p>
+        </section>
+        <section class="nextCaseReport">
+          <p class="caseCode">NEXT CASE</p>
+          <h3>${campaign.cases[1].title}</h3>
+          <p>${profile.nextHook}</p>
+        </section>
+      </div>
+      ${renderCaseRecord()}
+      <div class="endingActions">
+        <button class="primaryAction" data-action="menu">사건 파일 보기</button>
+        <button data-action="start">CASE 01 다시 플레이</button>
+      </div>
+    </section>
+  `;
+}
+
+function renderCaseRecord() {
+  return `
+    <section class="caseRecord">
+      <p class="caseCode">CASE LOG</p>
+      ${state.caseRecords
+        .map(
+          (record) => `
+            <article>
+              <span>${record.code}</span>
+              <b>${record.title}</b>
+              <small>${record.endingTitle} · ${record.choice}</small>
+            </article>
+          `
+        )
+        .join('')}
     </section>
   `;
 }

@@ -1,9 +1,67 @@
+export const campaign = {
+  title: '디지털 탐정단 사건 파일',
+  subtitle: '사건을 해결할수록 나만의 탐정 스타일과 다음 이야기의 첫 단서가 달라집니다.',
+  cases: [
+    {
+      id: 'coupon-case',
+      code: 'CASE 01',
+      title: '사라진 칭찬 쿠폰',
+      status: 'playing',
+      summary: '기록과 현재 숫자가 맞지 않는 쿠폰 상자를 조사합니다.'
+    },
+    {
+      id: 'library-card-case',
+      code: 'CASE 02',
+      title: '도서관 대출 카드의 빈칸',
+      status: 'next',
+      summary: '사라진 책이 아니라 비어 있는 기록 칸에서 다음 사건이 시작됩니다.'
+    },
+    {
+      id: 'playground-time-case',
+      code: 'CASE 03',
+      title: '운동장 시간표의 두 이름',
+      status: 'locked',
+      summary: '여러 사건 기록이 모이면 같은 시간에 적힌 두 이름을 확인하게 됩니다.'
+    }
+  ],
+  defaultProfile: {
+    id: 'rookie',
+    title: '새내기 탐정',
+    trait: '관찰 시작',
+    body: '아직 해결한 사건이 없습니다. 첫 사건을 마치면 탐정 스타일이 기록됩니다.',
+    nextHook: 'CASE 01을 해결하면 다음 사건의 첫 제보 방식이 열립니다.'
+  },
+  profiles: {
+    careful: {
+      id: 'careful',
+      title: '기록형 탐정',
+      trait: '정확한 확인',
+      body: '기록, 숫자, 물건의 차이를 차분히 비교하는 데 강합니다.',
+      nextHook: 'CASE 02에서는 도서부 기록장이 먼저 열리고, 비어 있는 칸을 빠르게 발견합니다.'
+    },
+    kind: {
+      id: 'kind',
+      title: '공감형 탐정',
+      trait: '관계 회복',
+      body: '친구가 부끄럽지 않게 말하고, 함께 찾는 분위기를 만드는 데 강합니다.',
+      nextHook: 'CASE 02에서는 친구가 먼저 작은 제보를 건네며, 대화 선택지가 하나 더 열립니다.'
+    },
+    reflective: {
+      id: 'reflective',
+      title: '성장형 탐정',
+      trait: '다시 확인',
+      body: '성급했던 판단을 되돌아보고, 다음에는 한 번 더 확인하려는 태도가 남습니다.',
+      nextHook: 'CASE 02에서는 같은 실수를 피하기 위해 확인 체크리스트가 먼저 등장합니다.'
+    }
+  }
+};
+
 export const chapter = {
   id: 'coupon-case',
   code: 'CASE 01',
-  title: '사라진 학급 쿠폰',
+  title: '사라진 칭찬 쿠폰',
   subtitle: '분실인가, 오해인가',
-  location: '4학년 2반 교실',
+  location: '4학년 교실',
   clock: '08:43 AM',
   sceneImage: './public/scenes/classroom-v001.png',
   mission: {
@@ -19,7 +77,7 @@ export const chapter = {
       kicker: '08:37 AM · 조회 전',
       title: '비밀 쿠폰 상자',
       body:
-        '칠판 옆 칭찬 쿠폰 상자는 매주 금요일 학급 뽑기에 쓰입니다. 그런데 오늘 아침, 상자 속 숫자가 어제 기록과 맞지 않았습니다.'
+        '칠판 옆 칭찬 쿠폰 상자는 매주 금요일 4학년 쿠폰 뽑기에 쓰입니다. 그런데 오늘 아침, 상자 속 숫자가 어제 기록과 맞지 않았습니다.'
     },
     {
       kicker: '08:40 AM · 교실이 조용해짐',
@@ -43,7 +101,7 @@ export const chapter = {
     {
       id: 'notice-board',
       label: '기록표',
-      rect: { l: 14, t: 12, w: 25, h: 31 },
+      rect: { l: 15.8, t: 14.2, w: 5.4, h: 8.7 },
       clueId: 'record',
       prompt: '게시판 기록표에는 어제 마지막 남은 쿠폰 수가 적혀 있습니다.',
       dialogue: [
@@ -64,7 +122,7 @@ export const chapter = {
     {
       id: 'cleaning-chart',
       label: '청소 당번표',
-      rect: { l: 37, t: 18, w: 9, h: 22 },
+      rect: { l: 37.1, t: 19.2, w: 6.9, h: 15.8 },
       clueId: 'cleaning',
       prompt: '청소 당번표에는 방과 후 교실을 사용한 모둠이 표시되어 있습니다.',
       dialogue: [
@@ -85,7 +143,7 @@ export const chapter = {
     {
       id: 'coupon-box',
       label: '쿠폰 상자',
-      rect: { l: 84, t: 37, w: 12, h: 17 },
+      rect: { l: 88.1, t: 36.4, w: 8.4, h: 11.4 },
       clueId: 'box',
       prompt: '쿠폰 상자 안의 쿠폰 수가 기록표와 다릅니다.',
       dialogue: [
@@ -106,7 +164,7 @@ export const chapter = {
     {
       id: 'presentation-table',
       label: '발표 준비 자료',
-      rect: { l: 56, t: 73, w: 26, h: 16 },
+      rect: { l: 56.4, t: 75.3, w: 22.7, h: 13.2 },
       clueId: 'memo',
       prompt: '발표 준비 자료 옆에 작은 메모가 놓여 있습니다.',
       dialogue: [
@@ -220,18 +278,21 @@ export const chapter = {
     careful: {
       choice: '선생님과 기록을 확인한다',
       title: '꼼꼼한 탐정',
+      styleId: 'careful',
       body: '기록과 봉투를 선생님과 함께 확인했어요. 쿠폰은 발표 자료 봉투 안에서 발견되었습니다.',
       lesson: '확실한 기록을 확인하면 오해를 줄일 수 있어요.'
     },
     kind: {
       choice: '친구들과 차분히 함께 찾는다',
       title: '따뜻한 탐정',
+      styleId: 'kind',
       body: '친구들이 서로 의심하지 않도록 차분히 설명하고, 다 같이 봉투를 정리했어요.',
       lesson: '사실을 말할 때도 친구의 마음을 살피면 더 좋은 해결이 됩니다.'
     },
     rushed: {
       choice: '바로 모두에게 말한다',
       title: '다시 확인하는 탐정',
+      styleId: 'reflective',
       body: '성급히 말해서 친구가 잠깐 속상했어요. 하지만 다시 기록을 확인하며 문제를 바로잡았습니다.',
       lesson: '빨리 말하기보다 한 번 더 확인하는 습관이 중요해요.'
     }

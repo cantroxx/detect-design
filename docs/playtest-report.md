@@ -4,10 +4,10 @@ Date: 2026-07-07
 
 ## Scope
 
-- Product: 디지털 탐정단: 사라진 학급 쿠폰
+- Product: 디지털 탐정단: 사라진 칭찬 쿠폰
 - URL: http://127.0.0.1:5176/app/
 - Target player: elementary grade 4
-- Focus: complete story flow from title to prologue, dialogue clue collection, evidence board, case report, and ending
+- Focus: complete story flow from case file hub to prologue, dialogue clue collection, evidence board, case report, ending, detective style, and next case preview
 
 ## Desktop Flow
 
@@ -31,6 +31,8 @@ Passed.
    - 발표 준비 메모 + 쿠폰 상자
 10. Confirmed the case report screen opens after all evidence links are solved.
 11. Confirmed endings stay locked until the report is submitted in the correct order.
+12. Confirmed the ending records CASE 01 in the case log and derives a detective style.
+13. Confirmed the menu presents CASE 02 and CASE 03 as follow-up case files instead of making CASE 01 feel like a standalone game.
 12. Confirmed the final choice panel appears only after the report is complete.
 13. Confirmed reset returns to the menu and clears progress.
 14. Confirmed a wrong evidence pair shows feedback without breaking the game state.
@@ -68,6 +70,12 @@ The game now uses a story-first structure: title dossier, prologue slides, dialo
 Dialogue controls now keep a minimum 44px touch height on mobile.
 
 The evidence board no longer jumps directly to endings. A case report step was added so players must organize the facts before choosing how to speak to the class.
+
+The ending now carries campaign state: CASE LOG, DETECTIVE STYLE, and NEXT CASE preview. This mirrors the reference structure where chapter endings leave a record and point to the next chapter.
+
+## Hotspot Adjustment
+
+The classroom hotspots were tightened to actual objects: the small record note, the duty chart, the coupon box, and the presentation materials. Large visible overlay rectangles should no longer cover neighboring boards or shelves.
 
 ## Console
 

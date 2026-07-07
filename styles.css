@@ -110,10 +110,18 @@ button:not(:disabled):hover {
   pointer-events: none;
 }
 
-.menuCopy {
-  width: min(620px, 100%);
+.menuLayout {
+  width: min(1040px, 100%);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  align-items: center;
+  gap: 28px;
   position: relative;
   z-index: 1;
+}
+
+.menuCopy {
+  width: min(620px, 100%);
 }
 
 .menuCopy h2 {
@@ -165,6 +173,92 @@ button:not(:disabled):hover {
   display: block;
   margin-top: 8px;
   line-height: 1.45;
+}
+
+.caseFiles {
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  background: rgba(29, 38, 48, 0.8);
+  box-shadow: 0 20px 44px rgba(0, 0, 0, 0.26);
+}
+
+.caseFiles > p {
+  margin: 14px 0 0;
+  color: rgba(255, 253, 246, 0.76);
+  line-height: 1.6;
+  font-size: 0.94rem;
+}
+
+.caseFiles .terminalHeader {
+  color: rgba(255, 253, 246, 0.7);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.detectiveBadge {
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: 8px;
+  background: rgba(255, 253, 246, 0.1);
+}
+
+.detectiveBadge span,
+.caseFile span {
+  display: block;
+  color: var(--amber);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+}
+
+.detectiveBadge b,
+.detectiveBadge small {
+  display: block;
+}
+
+.detectiveBadge b {
+  margin-top: 6px;
+  font-size: 1.12rem;
+}
+
+.detectiveBadge small {
+  margin-top: 6px;
+  color: rgba(255, 253, 246, 0.76);
+  line-height: 1.5;
+}
+
+.caseFileList {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.caseFile {
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  background: rgba(255, 253, 246, 0.08);
+}
+
+.caseFile.solved {
+  border-color: rgba(94, 170, 130, 0.58);
+  background: rgba(94, 170, 130, 0.16);
+}
+
+.caseFile.nextOpen {
+  border-color: rgba(244, 184, 74, 0.66);
+}
+
+.caseFile h3 {
+  margin: 6px 0 0;
+  font-size: 1rem;
+}
+
+.caseFile p {
+  margin: 6px 0 0;
+  color: rgba(255, 253, 246, 0.74);
+  line-height: 1.45;
+  font-size: 0.9rem;
 }
 
 .introScreen {
@@ -364,7 +458,7 @@ button:not(:disabled):hover {
   position: absolute;
   padding: 0;
   border: 2px solid rgba(244, 184, 74, 0.92);
-  background: rgba(244, 184, 74, 0.08);
+  background: rgba(244, 184, 74, 0.04);
   border-radius: 6px;
   touch-action: manipulation;
 }
@@ -788,6 +882,79 @@ button:not(:disabled):hover {
   font-weight: 900;
 }
 
+.endingGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.styleReport,
+.nextCaseReport,
+.caseRecord {
+  padding: 14px;
+  border-radius: 8px;
+  background: rgba(255, 250, 240, 0.8);
+}
+
+.styleReport h3,
+.nextCaseReport h3 {
+  margin: 6px 0 0;
+  font-size: 1.18rem;
+}
+
+.styleReport b {
+  display: block;
+  margin-top: 8px;
+  color: var(--green-dark);
+}
+
+.styleReport p:not(.caseCode),
+.nextCaseReport p:not(.caseCode) {
+  margin-top: 8px;
+  font-size: 0.96rem;
+}
+
+.caseRecord {
+  margin-top: 12px;
+}
+
+.caseRecord article {
+  display: grid;
+  gap: 4px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+
+.caseRecord span {
+  color: var(--blue);
+  font-size: 0.74rem;
+  font-weight: 900;
+}
+
+.caseRecord small {
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.endingActions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 22px;
+}
+
+.endingActions .primaryAction {
+  margin-top: 0;
+}
+
+.endingActions button {
+  min-height: 46px;
+  padding: 11px 15px;
+  font-weight: 900;
+}
+
 .dialogueLayer {
   position: fixed;
   inset: 0;
@@ -874,6 +1041,11 @@ button:not(:disabled):hover {
     font-size: 3.3rem;
   }
 
+  .menuLayout {
+    grid-template-columns: 1fr;
+    align-items: end;
+  }
+
   .topBar,
   .sceneScreen,
   .boardScreen,
@@ -944,6 +1116,10 @@ button:not(:disabled):hover {
   }
 
   .boardGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .endingGrid {
     grid-template-columns: 1fr;
   }
 }
