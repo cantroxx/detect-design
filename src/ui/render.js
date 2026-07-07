@@ -1,4 +1,4 @@
-import { campaign, cases } from '../domain/gameData.js?v=20260707-campaign5';
+import { campaign, cases } from '../domain/gameData.js?v=20260707-osui1';
 import {
   advanceDialogue,
   advanceIntro,
@@ -24,9 +24,15 @@ import {
   skipIntro,
   startCase,
   submitBriefing
-} from '../application/gameEngine.js?v=20260707-campaign5';
+} from '../application/gameEngine.js?v=20260707-osui1';
 
 let state = createInitialState();
+const boardNodePositions = [
+  { x: 18, y: 28 },
+  { x: 66, y: 20 },
+  { x: 24, y: 70 },
+  { x: 72, y: 68 }
+];
 
 export function mount(root) {
   root.addEventListener('click', onClick);
@@ -87,15 +93,19 @@ function renderHeader() {
   const boardUnlocked = canOpenBoard(state);
   return `
     <header class="topBar">
+      <div class="osBrand">
+        <span>DD-OS</span>
+        <b>4학년 탐정단</b>
+      </div>
       <div class="caseHud">
         <p class="eyebrow">${activeCase.code} · ${activeCase.clock}</p>
         <h1>${activeCase.title}</h1>
       </div>
       <nav class="topActions" aria-label="게임 이동">
-        <button data-action="scene">${activeCase.location}</button>
-        <button data-action="board" ${boardUnlocked ? '' : 'disabled'}>증거 보드</button>
-        <button data-action="briefing" ${isSolved(state) ? '' : 'disabled'}>보고서</button>
-        <button data-action="menu">사건 파일</button>
+        <button data-action="scene"><span class="navIcon sceneIcon" aria-hidden="true"></span>${activeCase.location}</button>
+        <button data-action="board" ${boardUnlocked ? '' : 'disabled'}><span class="navIcon boardIcon" aria-hidden="true"></span>증거</button>
+        <button data-action="briefing" ${isSolved(state) ? '' : 'disabled'}><span class="navIcon reportIcon" aria-hidden="true"></span>보고서</button>
+        <button data-action="menu"><span class="navIcon fileIcon" aria-hidden="true"></span>파일</button>
       </nav>
       <div class="progress" aria-label="단서 진행도">
         <span>${progress.collected.length}</span><small>/ ${activeCase.clues.length}</small>
@@ -110,19 +120,33 @@ function renderMenu() {
     <section class="menuScreen">
       <div class="menuScan" aria-hidden="true"></div>
       <div class="menuLayout">
-        <div class="menuCopy">
-          <p class="caseCode">CAMPAIGN</p>
-          <h2>디지털 탐정단</h2>
-          <p class="menuSub">5개의 생활 추리 사건</p>
+        <section class="osHeroWindow" aria-label="디지털 탐정단 시작 화면">
+          <div class="windowChrome">
+            <span></span><span></span><span></span>
+            <b>detective-os.home</b>
+          </div>
+          <p class="caseCode">BOOT READY</p>
+          <h2>Digital Detective OS</h2>
+          <p class="menuSub">디지털 탐정단 : 사라진 학급 쿠폰</p>
           <p>
-            4학년 교실과 학교 곳곳에서 생긴 작은 오해를 기록, 배려, 협력으로 해결합니다.
-            사건 선택이 쌓이면 마지막 캠페인 엔딩이 달라집니다.
+            4학년 학교 곳곳에서 생긴 작은 오해를 기록, 배려, 협력으로 해결합니다.
+            사건 선택이 쌓이면 나만의 탐정 스타일과 캠페인 엔딩이 달라집니다.
           </p>
-          <button class="primaryAction" data-action="start" data-value="${nextCase.id}">
-            ${state.caseRecords.length === 0 ? '첫 사건 시작' : isCampaignComplete(state) ? '처음부터 다시 시작' : '다음 사건 시작'}
-          </button>
-        </div>
+          <div class="osCommandStack">
+            <button class="primaryAction" data-action="start" data-value="${nextCase.id}">
+              ${state.caseRecords.length === 0 ? '첫 사건 실행' : isCampaignComplete(state) ? '캠페인 초기화' : '다음 사건 실행'}
+            </button>
+            <span>ACTIVE FILE · ${nextCase.code} · ${nextCase.title}</span>
+          </div>
+        </section>
         ${renderCampaignPanel()}
+      </div>
+      <div class="desktopDock" aria-hidden="true">
+        <span class="dockApp active"></span>
+        <span class="dockApp"></span>
+        <span class="dockApp"></span>
+        <span class="dockDivider"></span>
+        <span class="dockApp small"></span>
       </div>
     </section>
   `;
@@ -132,6 +156,10 @@ function renderCampaignPanel() {
   const profile = getDetectiveProfile(state);
   return `
     <aside class="caseFiles" aria-label="${campaign.title}">
+      <div class="windowChrome slim">
+        <span></span><span></span><span></span>
+        <b>case-files.db</b>
+      </div>
       <div class="terminalHeader">
         <span>${campaign.title}</span>
         <b>${state.caseRecords.length}/${cases.length}</b>
@@ -178,8 +206,11 @@ function renderCaseFile(caseItem) {
       ${locked ? 'disabled' : ''}
     >
       <span>${caseItem.code} · ${status}</span>
-      <h3>${caseItem.title}</h3>
-      <p>${record ? `${record.styleTitle} 기록으로 종결 · 다시 조사 가능` : caseItem.summary}</p>
+      <div>
+        <h3>${caseItem.title}</h3>
+        <p>${record ? `${record.styleTitle} 기록으로 종결 · 다시 조사 가능` : caseItem.summary}</p>
+      </div>
+      <small>${locked ? 'LOCK' : record ? 'LOG' : 'OPEN'}</small>
     </button>
   `;
 }
@@ -296,26 +327,34 @@ function renderBoard() {
         <h2>말보다 먼저, 단서를 연결합니다</h2>
         <p>${activeCase.mission.board}</p>
       </div>
-      <div class="boardGrid">
-        ${activeCase.clues.map(renderBoardNode).join('')}
-      </div>
-      <div class="linkPanel">
-        <h3>확인한 관계</h3>
-        <ul>
-          ${activeCase.links.map(renderLinkStatus).join('')}
-        </ul>
-        ${solved ? renderBriefingGate() : '<p class="boardHint">단서 카드 두 개를 차례로 눌러 관계를 확인하세요.</p>'}
+      <div class="boardWorkspace">
+        <section class="boardCanvas" aria-label="${activeCase.title} 증거 관계도">
+          <div class="boardWatermark" aria-hidden="true">${activeCase.code}</div>
+          <svg class="boardLines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            ${activeCase.links.map(renderBoardLine).join('')}
+          </svg>
+          ${activeCase.clues.map(renderBoardNode).join('')}
+        </section>
+        <div class="linkPanel">
+          <h3>관계 로그</h3>
+          <ul>
+            ${activeCase.links.map(renderLinkStatus).join('')}
+          </ul>
+          ${solved ? renderBriefingGate() : '<p class="boardHint">단서 파일 두 개를 차례로 눌러 연결선을 활성화하세요.</p>'}
+        </div>
       </div>
     </section>
   `;
 }
 
-function renderBoardNode(clue) {
+function renderBoardNode(clue, index) {
   const progress = getCaseProgress(state);
   const selected = progress.selected === clue.id;
+  const position = boardNodePositions[index] ?? { x: 50, y: 50 };
   return `
     <button
       class="boardNode ${selected ? 'selected' : ''}"
+      style="--x:${position.x}%;--y:${position.y}%"
       data-action="select-clue"
       data-value="${clue.id}"
     >
@@ -326,13 +365,41 @@ function renderBoardNode(clue) {
   `;
 }
 
+function renderBoardLine(link) {
+  const activeCase = getActiveCase(state);
+  const progress = getCaseProgress(state);
+  const aIndex = activeCase.clues.findIndex((clue) => clue.id === link.a);
+  const bIndex = activeCase.clues.findIndex((clue) => clue.id === link.b);
+  if (aIndex < 0 || bIndex < 0) return '';
+
+  const a = boardNodePositions[aIndex] ?? { x: 50, y: 50 };
+  const b = boardNodePositions[bIndex] ?? { x: 50, y: 50 };
+  const done = progress.links.includes(linkKey(link.a, link.b));
+  const selected = progress.selected === link.a || progress.selected === link.b;
+  return `
+    <line
+      class="${done ? 'done' : ''} ${selected ? 'selected' : ''}"
+      x1="${a.x}"
+      y1="${a.y}"
+      x2="${b.x}"
+      y2="${b.y}"
+    />
+  `;
+}
+
 function renderLinkStatus(link) {
   const activeCase = getActiveCase(state);
   const progress = getCaseProgress(state);
   const done = progress.links.includes(linkKey(link.a, link.b));
   const a = activeCase.clues.find((clue) => clue.id === link.a);
   const b = activeCase.clues.find((clue) => clue.id === link.b);
-  return `<li class="${done ? 'done' : ''}">${a.title} + ${b.title}</li>`;
+  return `
+    <li class="${done ? 'done' : ''}">
+      <span>${done ? '연결 완료' : '대기 중'}</span>
+      <b>${a.title} + ${b.title}</b>
+      ${done ? `<small>${link.reason}</small>` : ''}
+    </li>
+  `;
 }
 
 function renderBriefingGate() {
@@ -452,29 +519,36 @@ function renderEnding() {
   const complete = isCampaignComplete(state);
   return `
     <section class="endingScreen">
-      <p class="caseCode">${activeCase.code} CLOSED</p>
-      <h2>${ending.title}</h2>
-      <p>${ending.body}</p>
-      <div class="lesson">${ending.lesson}</div>
-      <div class="endingGrid">
-        <section class="styleReport">
-          <p class="caseCode">DETECTIVE STYLE</p>
-          <h3>${profile.title}</h3>
-          <b>${profile.trait}</b>
-          <p>${profile.body}</p>
-        </section>
-        <section class="nextCaseReport">
-          <p class="caseCode">${complete ? 'CAMPAIGN ENDING' : 'NEXT CASE'}</p>
-          <h3>${complete ? resolveCampaignEnding(state).title : nextCase.title}</h3>
-          <p>${complete ? '모든 사건 기록을 바탕으로 최종 캠페인 엔딩이 열렸습니다.' : profile.nextHook}</p>
-        </section>
-      </div>
-      ${renderCaseRecord()}
-      ${complete ? renderCampaignEnding() : ''}
-      <div class="endingActions">
-        ${nextCase ? `<button class="primaryAction" data-action="start" data-value="${nextCase.id}">다음 사건 시작</button>` : ''}
-        <button data-action="menu">사건 파일 보기</button>
-        <button data-action="start" data-value="${activeCase.id}">${activeCase.code} 다시 플레이</button>
+      <div class="endingReport">
+        <div class="windowChrome slim">
+          <span></span><span></span><span></span>
+          <b>case-close.report</b>
+        </div>
+        <div class="endingStamp">${activeCase.code} CLOSED</div>
+        <p class="caseCode">CASE CLOSED REPORT</p>
+        <h2>${ending.title}</h2>
+        <p>${ending.body}</p>
+        <div class="lesson">${ending.lesson}</div>
+        <div class="endingGrid">
+          <section class="styleReport">
+            <p class="caseCode">DETECTIVE STYLE</p>
+            <h3>${profile.title}</h3>
+            <b>${profile.trait}</b>
+            <p>${profile.body}</p>
+          </section>
+          <section class="nextCaseReport">
+            <p class="caseCode">${complete ? 'CAMPAIGN ENDING' : 'NEXT CASE'}</p>
+            <h3>${complete ? resolveCampaignEnding(state).title : nextCase.title}</h3>
+            <p>${complete ? '모든 사건 기록을 바탕으로 최종 캠페인 엔딩이 열렸습니다.' : profile.nextHook}</p>
+          </section>
+        </div>
+        ${renderCaseRecord()}
+        ${complete ? renderCampaignEnding() : ''}
+        <div class="endingActions">
+          ${nextCase ? `<button class="primaryAction" data-action="start" data-value="${nextCase.id}">다음 사건 시작</button>` : ''}
+          <button data-action="menu">사건 파일 보기</button>
+          <button data-action="start" data-value="${activeCase.id}">${activeCase.code} 다시 플레이</button>
+        </div>
       </div>
     </section>
   `;

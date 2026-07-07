@@ -5,6 +5,10 @@
   --muted: #66717d;
   --night: #1d2630;
   --night-soft: #2c3945;
+  --os: #101923;
+  --os-soft: #172635;
+  --teal: #58c8bd;
+  --teal-soft: rgba(88, 200, 189, 0.18);
   --green: #5eaa82;
   --green-dark: #39745a;
   --blue: #4f80c9;
@@ -25,9 +29,9 @@ body {
   margin: 0;
   min-height: 100vh;
   background:
-    linear-gradient(135deg, rgba(255, 248, 231, 0.96), rgba(230, 246, 237, 0.94)),
-    radial-gradient(circle at 12% 18%, rgba(79, 128, 201, 0.18), transparent 28%),
-    radial-gradient(circle at 86% 10%, rgba(244, 184, 74, 0.22), transparent 30%);
+    linear-gradient(135deg, rgba(243, 248, 239, 0.98), rgba(255, 247, 221, 0.96)),
+    radial-gradient(circle at 12% 18%, rgba(88, 200, 189, 0.16), transparent 28%),
+    radial-gradient(circle at 86% 10%, rgba(244, 184, 74, 0.2), transparent 30%);
   color: var(--ink);
 }
 
@@ -62,7 +66,7 @@ button:not(:disabled):hover {
   color: var(--green-dark);
   font-weight: 900;
   font-size: 0.74rem;
-  letter-spacing: 0.12em;
+  letter-spacing: 0;
 }
 
 .primaryAction {
@@ -86,8 +90,8 @@ button:not(:disabled):hover {
   position: relative;
   overflow: hidden;
   background:
-    linear-gradient(90deg, rgba(29, 38, 48, 0.92) 0 42%, rgba(29, 38, 48, 0.42) 68%),
-    url("./public/scenes/menu-desk-v001.png") center / cover;
+    linear-gradient(90deg, rgba(7, 13, 20, 0.92) 0 44%, rgba(16, 25, 35, 0.58) 68%, rgba(16, 25, 35, 0.32)),
+    url("./public/scenes/detective-os-v001.png") center / cover;
   color: #fffdf6;
 }
 
@@ -105,30 +109,39 @@ button:not(:disabled):hover {
 .menuScan {
   position: absolute;
   inset: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(88, 200, 189, 0.26);
   border-radius: 8px;
   pointer-events: none;
+  box-shadow: inset 0 0 80px rgba(88, 200, 189, 0.08);
 }
 
 .menuLayout {
-  width: min(1040px, 100%);
+  width: min(1140px, 100%);
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 360px;
+  grid-template-columns: minmax(0, 1fr) 392px;
   align-items: center;
   gap: 28px;
   position: relative;
   z-index: 1;
 }
 
-.menuCopy {
-  width: min(620px, 100%);
+.osHeroWindow {
+  width: min(660px, 100%);
+  padding: 18px;
+  border: 1px solid rgba(88, 200, 189, 0.28);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(16, 25, 35, 0.9), rgba(16, 25, 35, 0.74)),
+    rgba(16, 25, 35, 0.8);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.42);
+  backdrop-filter: blur(10px);
 }
 
-.menuCopy h2 {
-  margin: 10px 0 0;
-  max-width: 12ch;
-  font-size: 4.6rem;
-  line-height: 0.98;
+.osHeroWindow h2 {
+  margin: 18px 0 0;
+  max-width: 13ch;
+  font-size: 4.2rem;
+  line-height: 1;
   word-break: keep-all;
   overflow-wrap: normal;
 }
@@ -140,47 +153,126 @@ button:not(:disabled):hover {
   font-size: 1.05rem;
 }
 
-.menuCopy p:not(.caseCode):not(.menuSub) {
+.osHeroWindow p:not(.caseCode):not(.menuSub) {
   margin: 20px 0 0;
-  max-width: 34rem;
+  max-width: 36rem;
   color: rgba(255, 253, 246, 0.84);
   line-height: 1.8;
   font-size: 1.04rem;
 }
 
-.menuDossier {
+.windowChrome {
+  display: grid;
+  grid-template-columns: 10px 10px 10px 1fr;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  margin: -8px -8px 18px;
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 253, 246, 0.62);
+  font-size: 0.76rem;
+  font-weight: 900;
+}
+
+.windowChrome.slim {
+  margin: -8px -8px 12px;
+}
+
+.windowChrome span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--rose);
+}
+
+.windowChrome span:nth-child(2) {
+  background: var(--amber);
+}
+
+.windowChrome span:nth-child(3) {
+  background: var(--teal);
+}
+
+.windowChrome b {
+  justify-self: end;
+  font-size: 0.72rem;
+}
+
+.osCommandStack {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.osCommandStack .primaryAction {
+  margin-top: 0;
+}
+
+.osCommandStack span {
+  color: rgba(255, 253, 246, 0.68);
+  font-size: 0.8rem;
+  font-weight: 900;
+}
+
+.desktopDock {
   position: absolute;
-  right: 34px;
-  bottom: 34px;
-  z-index: 1;
-  width: min(320px, calc(100% - 68px));
-  padding: 16px;
+  left: 50%;
+  bottom: 22px;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 8px;
-  background: rgba(29, 38, 48, 0.78);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.26);
+  background: rgba(16, 25, 35, 0.72);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
 }
 
-.menuDossier span {
-  display: block;
-  color: var(--amber);
-  font-size: 0.72rem;
-  font-weight: 900;
-  letter-spacing: 0.12em;
+.dockApp {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(88, 200, 189, 0.78), rgba(94, 170, 130, 0.72)),
+    rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
 }
 
-.menuDossier b {
-  display: block;
-  margin-top: 8px;
-  line-height: 1.45;
+.dockApp:nth-child(2) {
+  background: linear-gradient(135deg, rgba(244, 184, 74, 0.84), rgba(216, 109, 114, 0.58));
+}
+
+.dockApp:nth-child(3) {
+  background: linear-gradient(135deg, rgba(79, 128, 201, 0.86), rgba(88, 200, 189, 0.58));
+}
+
+.dockApp.small {
+  width: 26px;
+  height: 26px;
+}
+
+.dockDivider {
+  width: 1px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.16);
 }
 
 .caseFiles {
+  max-height: calc(100vh - 136px);
+  overflow: auto;
   padding: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(88, 200, 189, 0.26);
   border-radius: 8px;
-  background: rgba(29, 38, 48, 0.8);
+  background: rgba(16, 25, 35, 0.84);
   box-shadow: 0 20px 44px rgba(0, 0, 0, 0.26);
+  backdrop-filter: blur(10px);
+  scrollbar-color: rgba(88, 200, 189, 0.52) rgba(255, 255, 255, 0.08);
 }
 
 .caseFiles > p {
@@ -208,7 +300,7 @@ button:not(:disabled):hover {
   color: var(--amber);
   font-size: 0.72rem;
   font-weight: 900;
-  letter-spacing: 0.1em;
+  letter-spacing: 0;
 }
 
 .detectiveBadge b,
@@ -235,7 +327,10 @@ button:not(:disabled):hover {
 
 .caseFile {
   width: 100%;
-  display: block;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px 12px;
+  align-items: center;
   padding: 12px;
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 8px;
@@ -263,6 +358,19 @@ button:not(:disabled):hover {
   color: rgba(255, 253, 246, 0.74);
   line-height: 1.45;
   font-size: 0.9rem;
+}
+
+.caseFile small {
+  grid-row: 1 / span 2;
+  grid-column: 2;
+  min-width: 48px;
+  padding: 6px 8px;
+  border: 1px solid rgba(88, 200, 189, 0.24);
+  border-radius: 999px;
+  color: rgba(255, 253, 246, 0.72);
+  font-size: 0.68rem;
+  font-weight: 900;
+  text-align: center;
 }
 
 .campaignStats {
@@ -338,7 +446,7 @@ button:not(:disabled):hover {
   color: var(--green-dark);
   font-size: 0.78rem;
   font-weight: 900;
-  letter-spacing: 0.08em;
+  letter-spacing: 0;
 }
 
 .introFrame h2 {
@@ -376,17 +484,41 @@ button:not(:disabled):hover {
 .topBar {
   min-height: 74px;
   display: grid;
-  grid-template-columns: 1fr auto auto;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
   align-items: center;
   gap: 16px;
   padding: 12px 22px;
   border-bottom: 1px solid var(--line-dark);
-  background: rgba(29, 38, 48, 0.94);
+  background:
+    linear-gradient(90deg, rgba(16, 25, 35, 0.98), rgba(23, 38, 53, 0.94)),
+    var(--os);
   color: #fffdf6;
   backdrop-filter: blur(10px);
   position: sticky;
   top: 0;
   z-index: 20;
+}
+
+.osBrand {
+  min-height: 50px;
+  display: grid;
+  align-content: center;
+  gap: 2px;
+  padding: 8px 12px;
+  border: 1px solid rgba(88, 200, 189, 0.22);
+  border-radius: 8px;
+  background: rgba(88, 200, 189, 0.08);
+}
+
+.osBrand span {
+  color: var(--teal);
+  font-weight: 900;
+  font-size: 1rem;
+}
+
+.osBrand b {
+  color: rgba(255, 253, 246, 0.68);
+  font-size: 0.72rem;
 }
 
 .topBar h1,
@@ -408,10 +540,61 @@ button:not(:disabled):hover {
 }
 
 .topActions button {
-  padding: 8px 12px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 11px;
   color: #fffdf6;
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.18);
+  font-weight: 800;
+}
+
+.navIcon {
+  width: 18px;
+  height: 18px;
+  display: inline-block;
+  border-radius: 5px;
+  border: 2px solid currentColor;
+  opacity: 0.86;
+}
+
+.sceneIcon {
+  border-radius: 50% 50% 45% 45%;
+}
+
+.boardIcon {
+  position: relative;
+}
+
+.boardIcon::before,
+.boardIcon::after {
+  content: "";
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.boardIcon::before {
+  left: 2px;
+  top: 2px;
+}
+
+.boardIcon::after {
+  right: 2px;
+  bottom: 2px;
+}
+
+.reportIcon {
+  border-radius: 2px;
+}
+
+.fileIcon {
+  border-radius: 4px;
+  border-top-width: 6px;
 }
 
 .progress {
@@ -490,10 +673,20 @@ button:not(:disabled):hover {
 .hotspot {
   position: absolute;
   padding: 0;
-  border: 2px solid rgba(244, 184, 74, 0.92);
-  background: rgba(244, 184, 74, 0.04);
+  border: 1px solid rgba(244, 184, 74, 0.72);
+  background: rgba(244, 184, 74, 0.02);
   border-radius: 6px;
+  box-shadow: inset 0 0 18px rgba(244, 184, 74, 0.08);
   touch-action: manipulation;
+}
+
+.hotspot::after {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 1px solid rgba(255, 253, 246, 0.3);
+  border-radius: 4px;
+  pointer-events: none;
 }
 
 .hotspot.pulse {
@@ -501,8 +694,9 @@ button:not(:disabled):hover {
 }
 
 .hotspot.found {
-  border-color: rgba(94, 170, 130, 0.9);
-  background: rgba(94, 170, 130, 0.18);
+  border-color: rgba(88, 200, 189, 0.86);
+  background: rgba(88, 200, 189, 0.08);
+  box-shadow: inset 0 0 18px rgba(88, 200, 189, 0.16);
 }
 
 .hotspot:focus-visible {
@@ -535,8 +729,7 @@ button:not(:disabled):hover {
 .briefingIntro,
 .reportPaper,
 .lineBank,
-.linkPanel,
-.endingScreen {
+.linkPanel {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: rgba(255, 253, 246, 0.94);
@@ -554,7 +747,7 @@ button:not(:disabled):hover {
   color: var(--muted);
   font-size: 0.76rem;
   font-weight: 900;
-  letter-spacing: 0.1em;
+  letter-spacing: 0;
 }
 
 .terminalHeader b {
@@ -623,9 +816,13 @@ button:not(:disabled):hover {
 
 .boardScreen {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 380px;
   gap: 18px;
   padding: 18px;
+  flex: 1;
+  background:
+    radial-gradient(circle at 18% 14%, rgba(88, 200, 189, 0.12), transparent 26%),
+    radial-gradient(circle at 88% 28%, rgba(244, 184, 74, 0.12), transparent 24%),
+    linear-gradient(135deg, rgba(16, 25, 35, 0.98), rgba(31, 47, 57, 0.94));
 }
 
 .briefingScreen {
@@ -635,8 +832,12 @@ button:not(:disabled):hover {
 }
 
 .boardIntro {
-  grid-column: 1 / -1;
   padding: 18px;
+  color: #fffdf6;
+  background:
+    linear-gradient(90deg, rgba(16, 25, 35, 0.92), rgba(16, 25, 35, 0.66)),
+    rgba(16, 25, 35, 0.9);
+  border-color: rgba(88, 200, 189, 0.26);
 }
 
 .briefingIntro {
@@ -663,6 +864,10 @@ button:not(:disabled):hover {
   margin-top: 8px;
   color: #43515f;
   line-height: 1.6;
+}
+
+.boardIntro p:not(.caseCode) {
+  color: rgba(255, 253, 246, 0.78);
 }
 
 .reportDesk {
@@ -722,7 +927,7 @@ button:not(:disabled):hover {
   color: var(--green-dark);
   font-size: 0.74rem;
   font-weight: 900;
-  letter-spacing: 0.08em;
+  letter-spacing: 0;
 }
 
 .reportSlots button {
@@ -786,22 +991,84 @@ button:not(:disabled):hover {
   background: #e5f8eb;
 }
 
-.boardGrid {
+.boardWorkspace {
   display: grid;
-  grid-template-columns: repeat(2, minmax(190px, 1fr));
-  gap: 14px;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  gap: 18px;
   align-content: start;
 }
 
+.boardCanvas {
+  position: relative;
+  min-height: clamp(520px, 66vh, 720px);
+  border: 1px solid rgba(88, 200, 189, 0.26);
+  border-radius: 8px;
+  overflow: hidden;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    radial-gradient(circle at 30% 18%, rgba(88, 200, 189, 0.16), transparent 28%),
+    linear-gradient(160deg, rgba(20, 34, 45, 0.98), rgba(9, 15, 22, 0.96));
+  background-size: 34px 34px, 34px 34px, auto, auto;
+  box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.24), 0 18px 44px rgba(0, 0, 0, 0.24);
+}
+
+.boardWatermark {
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+  color: rgba(255, 253, 246, 0.08);
+  font-size: clamp(2.8rem, 8vw, 6.8rem);
+  font-weight: 900;
+  pointer-events: none;
+}
+
+.boardLines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.boardLines line {
+  stroke: rgba(255, 253, 246, 0.2);
+  stroke-width: 0.46;
+  stroke-dasharray: 2 2;
+}
+
+.boardLines line.selected {
+  stroke: rgba(244, 184, 74, 0.62);
+  stroke-width: 0.7;
+}
+
+.boardLines line.done {
+  stroke: rgba(88, 200, 189, 0.9);
+  stroke-width: 0.82;
+  stroke-dasharray: 0;
+  filter: drop-shadow(0 0 4px rgba(88, 200, 189, 0.52));
+}
+
 .boardNode {
-  min-height: 138px;
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  transform: translate(-50%, -50%);
+  width: min(230px, 34%);
+  min-height: 128px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: space-between;
   padding: 16px;
   text-align: left;
-  background: #fffdf6;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  border-color: rgba(255, 255, 255, 0.18);
+  background:
+    linear-gradient(180deg, rgba(255, 253, 246, 0.96), rgba(238, 247, 239, 0.94)),
+    #fffdf6;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.22);
 }
 
 .boardNode.selected {
@@ -820,6 +1087,10 @@ button:not(:disabled):hover {
 
 .linkPanel {
   padding: 18px;
+  align-self: start;
+  background:
+    linear-gradient(180deg, rgba(255, 253, 246, 0.96), rgba(241, 250, 245, 0.94)),
+    #fffdf6;
 }
 
 .linkPanel h3 {
@@ -835,7 +1106,9 @@ button:not(:disabled):hover {
 }
 
 .linkPanel li {
-  padding: 10px;
+  display: grid;
+  gap: 5px;
+  padding: 11px;
   border-radius: 8px;
   background: #f2f2ec;
   color: var(--muted);
@@ -845,6 +1118,18 @@ button:not(:disabled):hover {
   background: #e5f8eb;
   color: var(--green-dark);
   font-weight: 900;
+}
+
+.linkPanel li span {
+  color: var(--blue);
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.linkPanel li small {
+  color: #50606f;
+  line-height: 1.45;
+  font-weight: 700;
 }
 
 .boardHint {
@@ -890,9 +1175,25 @@ button:not(:disabled):hover {
 }
 
 .endingScreen {
-  width: min(720px, calc(100% - 32px));
-  margin: 44px auto;
-  padding: 34px;
+  min-height: calc(100vh - 74px);
+  padding: 34px 18px;
+  background:
+    radial-gradient(circle at 16% 18%, rgba(88, 200, 189, 0.12), transparent 28%),
+    radial-gradient(circle at 84% 12%, rgba(244, 184, 74, 0.16), transparent 26%),
+    linear-gradient(145deg, rgba(16, 25, 35, 0.98), rgba(43, 54, 54, 0.95));
+}
+
+.endingReport {
+  position: relative;
+  width: min(880px, 100%);
+  margin: 0 auto;
+  padding: 24px;
+  border: 1px solid rgba(88, 200, 189, 0.24);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 253, 246, 0.96), rgba(255, 248, 231, 0.94)),
+    repeating-linear-gradient(0deg, transparent 0 34px, rgba(79, 128, 201, 0.1) 35px);
+  box-shadow: 0 26px 70px rgba(0, 0, 0, 0.34);
 }
 
 .endingScreen h2 {
@@ -904,6 +1205,18 @@ button:not(:disabled):hover {
   margin-top: 16px;
   line-height: 1.8;
   color: #42515f;
+}
+
+.endingStamp {
+  position: absolute;
+  right: 22px;
+  top: 64px;
+  transform: rotate(4deg);
+  padding: 8px 12px;
+  border: 2px solid rgba(216, 109, 114, 0.52);
+  border-radius: 6px;
+  color: rgba(216, 109, 114, 0.84);
+  font-weight: 900;
 }
 
 .lesson {
@@ -1044,7 +1357,7 @@ button:not(:disabled):hover {
   color: var(--amber);
   font-size: 0.78rem;
   font-weight: 900;
-  letter-spacing: 0.08em;
+  letter-spacing: 0;
 }
 
 .dialogueBox h2 {
@@ -1090,6 +1403,10 @@ button:not(:disabled):hover {
   display: none;
 }
 
+.ending .toast {
+  display: none;
+}
+
 @keyframes pulse {
   0%,
   100% {
@@ -1101,20 +1418,25 @@ button:not(:disabled):hover {
 }
 
 @media (max-width: 900px) {
-  .menuCopy h2 {
+  .osHeroWindow h2 {
     font-size: 3.3rem;
   }
 
   .menuLayout {
     grid-template-columns: 1fr;
     align-items: end;
+    padding-bottom: 76px;
   }
 
   .topBar,
   .sceneScreen,
-  .boardScreen,
+  .boardWorkspace,
   .reportDesk {
     grid-template-columns: 1fr;
+  }
+
+  .topBar {
+    align-items: start;
   }
 
   .topActions {
@@ -1136,6 +1458,14 @@ button:not(:disabled):hover {
   .sceneCaption {
     display: grid;
   }
+
+  .boardCanvas {
+    min-height: 620px;
+  }
+
+  .boardNode {
+    width: min(220px, 38%);
+  }
 }
 
 @media (max-width: 620px) {
@@ -1144,17 +1474,20 @@ button:not(:disabled):hover {
     padding: 20px;
   }
 
-  .menuCopy h2,
+  .osHeroWindow h2,
   .introFrame h2,
   .endingScreen h2 {
     font-size: 2.35rem;
   }
 
-  .menuDossier {
-    left: 20px;
-    right: 20px;
-    bottom: 20px;
-    width: auto;
+  .osHeroWindow,
+  .caseFiles,
+  .endingReport {
+    padding: 14px;
+  }
+
+  .desktopDock {
+    bottom: 12px;
   }
 
   .introFrame {
@@ -1179,11 +1512,48 @@ button:not(:disabled):hover {
     min-height: 44px;
   }
 
-  .boardGrid {
-    grid-template-columns: 1fr;
+  .topBar {
+    gap: 10px;
+    padding: 10px 12px;
+  }
+
+  .osBrand {
+    min-height: 44px;
+  }
+
+  .topBar h1 {
+    max-width: 14rem;
+    font-size: 1.08rem;
+  }
+
+  .topActions button {
+    min-height: 40px;
+    padding: 7px 9px;
+    font-size: 0.9rem;
+  }
+
+  .boardCanvas {
+    min-height: 640px;
+  }
+
+  .boardNode {
+    width: min(156px, 36%);
+    min-height: 118px;
+    padding: 12px;
+  }
+
+  .boardNode b {
+    font-size: 0.98rem;
   }
 
   .endingGrid {
     grid-template-columns: 1fr;
+  }
+
+  .endingStamp {
+    position: static;
+    width: max-content;
+    max-width: 100%;
+    margin: 2px 0 14px auto;
   }
 }

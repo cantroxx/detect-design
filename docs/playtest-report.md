@@ -55,8 +55,8 @@ Passed at `390 x 844`.
 - No horizontal overflow on menu, scene, or board screens.
 - Classroom image loads correctly.
 - All hotspots are visible.
-- Board cards stack into one column.
-- Evidence board remains usable.
+- Evidence nodes stay inside the board canvas without overlapping each other.
+- Evidence board remains usable as a relationship graph.
 
 ## Follow-up Fix Applied
 
@@ -95,6 +95,17 @@ Verified ending branches:
 ## Hotspot Adjustment
 
 The classroom hotspots were tightened to actual objects: the small record note, the duty chart, the coupon box, and the presentation materials. Large visible overlay rectangles should no longer cover neighboring boards or shelves. CASE 02~05 scene backgrounds were generated with imagegen and copied into `public/scenes`.
+
+## OS UI Pass
+
+Applied after the campaign pass.
+
+- Main menu was changed from a normal title layout to an in-world detective OS desktop.
+- A new imagegen-generated wallpaper was copied to `public/scenes/detective-os-v001.png`.
+- Top navigation was changed into an OS status bar with compact app-style controls.
+- Evidence board was changed from a 2x2 card grid to a relationship graph with clue nodes and connector lines.
+- Hotspot overlays were made lighter so the scan frame marks objects without visually swallowing neighboring scene areas.
+- Ending screen was changed into a case-close report with a stamp, detective style panel, next case or campaign ending, and cumulative case log.
 
 ## Console
 

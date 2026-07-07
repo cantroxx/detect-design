@@ -7,7 +7,7 @@ Current game:
 - Title: 디지털 탐정단 사건 파일
 - Target: elementary grade 4
 - Format: static HTML/CSS/JavaScript
-- Flow: case file hub -> CASE 01~05 -> dialogue-based clue collection -> evidence board -> case report -> case ending -> final campaign ending
+- Flow: detective OS hub -> CASE 01~05 -> dialogue-based clue collection -> evidence relationship board -> case report -> case ending -> final campaign ending
 
 Campaign note:
 
@@ -15,6 +15,11 @@ Campaign note:
 - The menu keeps unlock state, case log, campaign stats, and detective style record.
 - Each case ending changes campaign stats.
 - After CASE 05, the accumulated stats resolve one final campaign ending.
+
+UI note:
+
+- The main menu uses an imagegen-generated detective OS wallpaper at `public/scenes/detective-os-v001.png`.
+- The board is a relationship graph, not a simple card grid, so the player sees clues accumulate and connect like a case file.
 
 ## Run Locally
 
