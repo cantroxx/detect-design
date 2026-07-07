@@ -134,6 +134,23 @@ Verification notes:
 
 - CASE 01 local pass confirmed 8 hotspots, 8 collected candidates, 8 board nodes, 0 pre-solved lines, 3 solved relationship lines, and 5 ending choices.
 
+## Scene Candidate Alignment Pass
+
+Applied after auditing whether the 8 scene candidates actually appear in the generated backgrounds.
+
+- CASE 01 no longer uses the missing water bottle candidate. Distractors now point to visible classroom objects: window plants, chalk tray, star banner, and desk notebook.
+- CASE 02 distractors were changed from loose or absent objects to visible library objects: window plant, circulation desk monitor, pencil cup, and round-table books.
+- CASE 03 distractors now use visible playground objects: safety cones, hula hoops, jump ropes, and the blue storage cooler.
+- CASE 04 distractors now use visible computer-room objects: window plant, teacher pencil cup, desk lamp, and front tablet.
+- CASE 05 distractors now use visible archive-room objects: magnifier, trophy, shelf binders, and tape rolls.
+- Cache query strings were updated to `20260707-sceneaudit1` so static hosts load the corrected data.
+
+Verification notes:
+
+- All 5 cases still expose exactly 8 evidence items and 8 hotspots.
+- Every hotspot `clueId` resolves to an evidence item, and every evidence item has a matching hotspot.
+- `npm run check` passed after the data change.
+
 ## Console
 
 No browser console errors were observed during the full ending pass.

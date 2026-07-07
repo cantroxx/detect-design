@@ -643,67 +643,67 @@ export const cases = [
 
 const extraEvidenceByCase = {
   'coupon-case': [
-    { id: 'sunlight', title: '창가 햇빛 자국', type: '장소', body: '창가 책상에 길게 비친 햇빛 자국입니다. 쿠폰 상자나 봉투와 직접 이어지는 흔적은 보이지 않습니다.', short: '직접 관련 낮음' },
-    { id: 'water-bottle', title: '이름 없는 물병', type: '물건', body: '책상 위 물병에는 이름표가 없지만, 쿠폰이나 발표 자료가 닿은 흔적은 없습니다.', short: '생활 물건' },
-    { id: 'star-doodle', title: '칠판 별 그림', type: '그림', body: '칠판 구석의 별 그림은 어제 미술 시간에 남은 낙서입니다.', short: '수업 흔적' },
-    { id: 'desk-notebook', title: '책상 위 공책', type: '물건', body: '공책에는 오늘 받아쓰기 연습이 적혀 있고 쿠폰 숫자와는 관련이 없습니다.', short: '수업 공책' }
+    { id: 'window-plants', title: '창가 화분', type: '물건', body: '창가에 놓인 화분입니다. 쿠폰 상자나 발표 자료 봉투와 직접 이어지는 흔적은 보이지 않습니다.', short: '생활 물건' },
+    { id: 'chalk-tray', title: '분필받침', type: '물건', body: '칠판 아래 분필과 지우개가 놓여 있습니다. 쿠폰 숫자와는 연결되지 않습니다.', short: '수업 도구' },
+    { id: 'star-banner', title: '별 깃발', type: '게시물', body: '오른쪽 벽의 별 깃발입니다. 어제 미술 시간에 걸어 둔 장식입니다.', short: '장식' },
+    { id: 'desk-notebook', title: '책상 위 공책', type: '물건', body: '책상 위 공책에는 오늘 수업 내용이 적혀 있고 쿠폰 숫자와는 관련이 없습니다.', short: '수업 공책' }
   ],
   'library-card-case': [
-    { id: 'clock', title: '도서관 시계', type: '물건', body: '도서관 시계는 정상적으로 움직이고 있지만, 대출 카드 빈칸의 이유를 직접 알려 주지는 않습니다.', short: '시간 표시' },
+    { id: 'window-plant', title: '창가 화분', type: '물건', body: '창가에 놓인 작은 화분입니다. 대출 카드 빈칸의 이유를 직접 알려 주지는 않습니다.', short: '생활 물건' },
+    { id: 'desk-monitor', title: '대출대 모니터', type: '화면', body: '대출대의 모니터는 켜져 있지만, 화면만으로는 누가 책을 빌렸는지 알 수 없습니다.', short: '화면 확인' },
     { id: 'pencil-cup', title: '연필꽂이', type: '물건', body: '대출대 옆 연필꽂이입니다. 연필은 정리되어 있고 기록이 지워진 흔적은 없습니다.', short: '정리됨' },
-    { id: 'poster', title: '독서 포스터', type: '게시물', body: '이번 달 독서 행사 포스터입니다. 책 제목과 대출 카드 빈칸은 연결되지 않습니다.', short: '행사 안내' },
-    { id: 'chair', title: '빈 의자', type: '장소', body: '책장 옆 빈 의자입니다. 누가 앉았는지는 알 수 있지만 책의 위치를 설명하지는 못합니다.', short: '앉은 자리' }
+    { id: 'table-books', title: '원형 탁자 책더미', type: '물건', body: '원형 탁자 위 책더미입니다. 찾던 책과 같은 분류 표시는 보이지 않습니다.', short: '다른 책' }
   ],
   'playground-time-case': [
-    { id: 'water-mark', title: '물병 자국', type: '흔적', body: '벤치에 둥근 물병 자국이 남아 있습니다. 두 모둠의 예약 시간과 직접 관련되지는 않습니다.', short: '생활 흔적' },
-    { id: 'traffic-cone', title: '주황색 콘', type: '물건', body: '운동장 가장자리의 안전 콘입니다. 평소에도 놓여 있던 물건입니다.', short: '안전 표시' },
-    { id: 'whistle', title: '낡은 호루라기', type: '물건', body: '장비함 안쪽의 낡은 호루라기입니다. 오늘 사용 기록은 없습니다.', short: '미사용' },
-    { id: 'sand-print', title: '모래 발자국', type: '흔적', body: '여러 친구가 지나간 발자국이라 어느 모둠의 약속을 가리키는지는 알 수 없습니다.', short: '여러 흔적' }
+    { id: 'safety-cones', title: '안전 콘 세 개', type: '물건', body: '공 바구니 옆 안전 콘입니다. 운동장 사용 순서와 직접 관련되지는 않습니다.', short: '안전 표시' },
+    { id: 'hula-hoops', title: '훌라후프 묶음', type: '물건', body: '장비실 앞에 걸린 훌라후프입니다. 오늘 예약 시간표를 설명하지는 못합니다.', short: '체육 도구' },
+    { id: 'jump-ropes', title: '걸린 줄넘기', type: '물건', body: '장비실 안쪽에 줄넘기가 걸려 있습니다. 평소에도 놓여 있던 체육 도구입니다.', short: '체육 도구' },
+    { id: 'blue-cooler', title: '파란 보관함', type: '물건', body: '게시판 아래 파란 보관함입니다. 두 모둠의 약속 시간과 직접 이어지지는 않습니다.', short: '보관함' }
   ],
   'comment-case': [
-    { id: 'mouse-pad', title: '마우스패드', type: '물건', body: '마우스패드는 제자리에 놓여 있고 댓글 내용과 연결되는 메모는 없습니다.', short: '제자리' },
-    { id: 'charging-cable', title: '충전 케이블', type: '물건', body: '책상 아래 충전 케이블입니다. 컴퓨터 사용 순서와 직접 연결되지는 않습니다.', short: '케이블' },
-    { id: 'window-reflection', title: '창문 반사', type: '화면', body: '창문에 모니터 빛이 비친 모습입니다. 댓글 작성 기록을 확인하기에는 부족합니다.', short: '반사' },
-    { id: 'empty-chair', title: '빈 자리', type: '장소', body: '빈 의자는 누군가 자리를 비운 흔적일 수 있지만, 댓글을 쓴 사람을 단정할 수 없습니다.', short: '빈 자리' }
+    { id: 'window-plant', title: '창가 화분', type: '물건', body: '창가에 놓인 화분입니다. 댓글 작성 시간이나 게시글 내용과는 연결되지 않습니다.', short: '생활 물건' },
+    { id: 'teacher-pencil-cup', title: '교사용 연필꽂이', type: '물건', body: '교사용 책상 위 연필꽂이입니다. 댓글 예절 활동 자료와 직접 관련은 없습니다.', short: '수업 도구' },
+    { id: 'desk-lamp', title: '책상 스탠드', type: '물건', body: '오른쪽 책상 스탠드입니다. 화면을 밝히지만 댓글 기록을 설명하지는 않습니다.', short: '조명' },
+    { id: 'front-tablet', title: '앞자리 태블릿', type: '화면', body: '앞자리 태블릿에도 화면이 켜져 있지만, 문제의 댓글 화면과 같은 기록은 보이지 않습니다.', short: '다른 화면' }
   ],
   'detective-notebook-case': [
-    { id: 'old-sticker', title: '낡은 스티커', type: '물건', body: '예전 행사 스티커입니다. 탐정 노트가 보관된 이유와 직접 관련은 없습니다.', short: '예전 행사' },
-    { id: 'paper-clip', title: '빈 클립', type: '물건', body: '책상 위 빈 클립입니다. 폴더가 빠진 이유를 설명하기에는 단서가 부족합니다.', short: '정리 도구' },
-    { id: 'old-poster', title: '지난 달 포스터', type: '게시물', body: '지난 달 안내 포스터입니다. 이번 최종 정리 기록과는 시기가 맞지 않습니다.', short: '지난 안내' },
-    { id: 'color-pencil', title: '색연필 통', type: '물건', body: '색연필 통에는 여러 색이 섞여 있지만 사건 파일 순서를 알려 주지는 않습니다.', short: '꾸미기 도구' }
+    { id: 'magnifier', title: '돋보기', type: '물건', body: '책상 위 돋보기입니다. 탐정 노트를 찾는 분위기는 만들지만 보관 위치를 직접 알려 주지는 않습니다.', short: '조사 도구' },
+    { id: 'gold-trophy', title: '금색 트로피', type: '물건', body: '창가 선반의 금색 트로피입니다. 앞 사건 기록 순서와는 관련이 없습니다.', short: '장식품' },
+    { id: 'shelf-binders', title: '책장 바인더', type: '물건', body: '오른쪽 책장의 바인더들입니다. 이번에 빠진 정리 폴더와는 다른 보관 자료입니다.', short: '보관 자료' },
+    { id: 'tape-rolls', title: '테이프 롤', type: '물건', body: '책상 위 테이프 롤입니다. 사건 카드를 붙일 수는 있지만 노트가 상자에 들어간 이유는 설명하지 못합니다.', short: '정리 도구' }
   ]
 };
 
 const extraHotspotsByCase = {
   'coupon-case': [
-    { id: 'sunlight-desk', label: '창가 책상', rect: { l: 0.8, t: 42.5, w: 12.6, h: 11.4 }, clueId: 'sunlight' },
-    { id: 'water-bottle', label: '물병', rect: { l: 73.4, t: 66.2, w: 4.8, h: 7.8 }, clueId: 'water-bottle' },
-    { id: 'chalk-star', label: '별 그림', rect: { l: 90.4, t: 19.2, w: 5.2, h: 7.8 }, clueId: 'star-doodle' },
-    { id: 'desk-notebook', label: '공책', rect: { l: 71.2, t: 82.8, w: 14.4, h: 8.6 }, clueId: 'desk-notebook' }
+    { id: 'window-plants', label: '화분', rect: { l: 0.8, t: 36.6, w: 10.8, h: 11.6 }, clueId: 'window-plants' },
+    { id: 'chalk-tray', label: '분필받침', rect: { l: 46.8, t: 43.1, w: 26.4, h: 5.4 }, clueId: 'chalk-tray' },
+    { id: 'star-banner', label: '별 깃발', rect: { l: 89.2, t: 6.6, w: 8.6, h: 16.2 }, clueId: 'star-banner' },
+    { id: 'desk-notebook', label: '공책', rect: { l: 33.2, t: 70.2, w: 16.8, h: 8.4 }, clueId: 'desk-notebook' }
   ],
   'library-card-case': [
-    { id: 'library-clock', label: '시계', rect: { l: 75.2, t: 8.2, w: 7.2, h: 8.4 }, clueId: 'clock' },
-    { id: 'pencil-cup', label: '연필꽂이', rect: { l: 70.8, t: 67.5, w: 5.8, h: 8.8 }, clueId: 'pencil-cup' },
-    { id: 'reading-poster', label: '포스터', rect: { l: 9.5, t: 15.8, w: 12.2, h: 16.8 }, clueId: 'poster' },
-    { id: 'library-chair', label: '빈 의자', rect: { l: 81.4, t: 70.8, w: 10.4, h: 15.4 }, clueId: 'chair' }
+    { id: 'window-plant', label: '창가 화분', rect: { l: 17.0, t: 28.8, w: 5.2, h: 10.0 }, clueId: 'window-plant' },
+    { id: 'desk-monitor', label: '모니터', rect: { l: 75.4, t: 34.4, w: 12.4, h: 14.8 }, clueId: 'desk-monitor' },
+    { id: 'pencil-cup', label: '연필꽂이', rect: { l: 61.7, t: 39.4, w: 5.8, h: 8.8 }, clueId: 'pencil-cup' },
+    { id: 'table-books', label: '책더미', rect: { l: 2.6, t: 74.0, w: 10.6, h: 10.2 }, clueId: 'table-books' }
   ],
   'playground-time-case': [
-    { id: 'water-mark', label: '물병 자국', rect: { l: 62.8, t: 70.8, w: 6.8, h: 5.4 }, clueId: 'water-mark' },
-    { id: 'traffic-cone', label: '안전 콘', rect: { l: 18.8, t: 60.8, w: 6.4, h: 12.8 }, clueId: 'traffic-cone' },
-    { id: 'whistle', label: '호루라기', rect: { l: 11.8, t: 70.6, w: 6.2, h: 5.6 }, clueId: 'whistle' },
-    { id: 'sand-print', label: '발자국', rect: { l: 48.6, t: 82.8, w: 11.8, h: 7.8 }, clueId: 'sand-print' }
+    { id: 'safety-cones', label: '안전 콘', rect: { l: 38.6, t: 68.4, w: 12.0, h: 14.2 }, clueId: 'safety-cones' },
+    { id: 'hula-hoops', label: '훌라후프', rect: { l: 0.0, t: 51.8, w: 8.4, h: 30.6 }, clueId: 'hula-hoops' },
+    { id: 'jump-ropes', label: '줄넘기', rect: { l: 13.8, t: 17.8, w: 16.8, h: 26.8 }, clueId: 'jump-ropes' },
+    { id: 'blue-cooler', label: '파란 보관함', rect: { l: 84.0, t: 76.8, w: 11.2, h: 12.8 }, clueId: 'blue-cooler' }
   ],
   'comment-case': [
-    { id: 'mouse-pad', label: '마우스패드', rect: { l: 66.2, t: 68.8, w: 9.8, h: 8.2 }, clueId: 'mouse-pad' },
-    { id: 'charging-cable', label: '충전 케이블', rect: { l: 34.4, t: 81.2, w: 12.4, h: 6.8 }, clueId: 'charging-cable' },
-    { id: 'window-reflection', label: '창문 반사', rect: { l: 10.6, t: 13.4, w: 15.2, h: 21.4 }, clueId: 'window-reflection' },
-    { id: 'empty-chair', label: '빈 자리', rect: { l: 16.4, t: 67.8, w: 12.8, h: 15.2 }, clueId: 'empty-chair' }
+    { id: 'window-plant', label: '창가 화분', rect: { l: 15.4, t: 35.5, w: 6.4, h: 10.6 }, clueId: 'window-plant' },
+    { id: 'teacher-pencil-cup', label: '연필꽂이', rect: { l: 74.0, t: 55.0, w: 5.0, h: 8.0 }, clueId: 'teacher-pencil-cup' },
+    { id: 'desk-lamp', label: '스탠드', rect: { l: 92.2, t: 42.0, w: 7.4, h: 24.2 }, clueId: 'desk-lamp' },
+    { id: 'front-tablet', label: '태블릿', rect: { l: 85.0, t: 72.0, w: 14.6, h: 27.0 }, clueId: 'front-tablet' }
   ],
   'detective-notebook-case': [
-    { id: 'old-sticker', label: '낡은 스티커', rect: { l: 20.4, t: 44.2, w: 8.2, h: 6.8 }, clueId: 'old-sticker' },
-    { id: 'paper-clip', label: '빈 클립', rect: { l: 60.2, t: 55.6, w: 6.4, h: 5.8 }, clueId: 'paper-clip' },
-    { id: 'old-poster', label: '지난 포스터', rect: { l: 80.2, t: 14.4, w: 10.8, h: 20.8 }, clueId: 'old-poster' },
-    { id: 'color-pencil', label: '색연필 통', rect: { l: 16.6, t: 69.8, w: 10.2, h: 12.8 }, clueId: 'color-pencil' }
+    { id: 'magnifier', label: '돋보기', rect: { l: 8.6, t: 79.6, w: 11.4, h: 11.8 }, clueId: 'magnifier' },
+    { id: 'gold-trophy', label: '트로피', rect: { l: 14.8, t: 47.2, w: 8.4, h: 14.8 }, clueId: 'gold-trophy' },
+    { id: 'shelf-binders', label: '바인더', rect: { l: 82.2, t: 5.6, w: 17.6, h: 27.6 }, clueId: 'shelf-binders' },
+    { id: 'tape-rolls', label: '테이프', rect: { l: 60.6, t: 82.4, w: 10.0, h: 11.6 }, clueId: 'tape-rolls' }
   ]
 };
 

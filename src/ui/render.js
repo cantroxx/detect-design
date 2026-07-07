@@ -1,4 +1,4 @@
-import { campaign, cases, getCaseHotspots, getEvidenceItems } from '../domain/gameData.js?v=20260707-osui3';
+import { campaign, cases, getCaseHotspots, getEvidenceItems } from '../domain/gameData.js?v=20260707-sceneaudit1';
 import {
   advanceDialogue,
   advanceIntro,
@@ -24,7 +24,7 @@ import {
   skipIntro,
   startCase,
   submitBriefing
-} from '../application/gameEngine.js?v=20260707-osui3';
+} from '../application/gameEngine.js?v=20260707-sceneaudit1';
 
 let state = createInitialState();
 const boardNodePositions = [
