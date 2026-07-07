@@ -1,17 +1,22 @@
-import { chapter } from '../domain/gameData.js?v=20260707-story3';
+import { chapter } from '../domain/gameData.js?v=20260707-briefing1';
 import {
   advanceDialogue,
   advanceIntro,
   canOpenBoard,
   chooseEnding,
+  clearBriefing,
   createInitialState,
   isSolved,
   linkKey,
+  openBriefing,
   openHotspot,
+  removeBriefingLine,
   selectClue,
+  selectBriefingLine,
   skipIntro,
+  submitBriefing,
   startCase
-} from '../application/gameEngine.js?v=20260707-story3';
+} from '../application/gameEngine.js?v=20260707-briefing1';
 
 let state = createInitialState();
 
@@ -38,6 +43,11 @@ function onClick(event) {
   } else if (type === 'hotspot') state = openHotspot(state, value);
   else if (type === 'dialogue-next') state = advanceDialogue(state);
   else if (type === 'select-clue') state = selectClue(state, value);
+  else if (type === 'briefing') state = openBriefing(state);
+  else if (type === 'select-briefing') state = selectBriefingLine(state, value);
+  else if (type === 'remove-briefing') state = removeBriefingLine(state, value);
+  else if (type === 'clear-briefing') state = clearBriefing(state);
+  else if (type === 'submit-briefing') state = submitBriefing(state);
   else if (type === 'ending') state = chooseEnding(state, value);
 
   render(root);
@@ -51,6 +61,7 @@ function render(root) {
       ${state.screen !== 'menu' && state.screen !== 'intro' ? renderHeader() : ''}
       ${state.screen === 'scene' ? renderScene() : ''}
       ${state.screen === 'board' ? renderBoard() : ''}
+      ${state.screen === 'briefing' ? renderBriefing() : ''}
       ${state.screen === 'ending' ? renderEnding() : ''}
       ${renderDialogue()}
       ${state.screen === 'menu' || state.screen === 'intro' ? '' : renderToast()}
@@ -70,6 +81,7 @@ function renderHeader() {
       <nav class="topActions" aria-label="게임 이동">
         <button data-action="scene">교실</button>
         <button data-action="board" ${boardUnlocked ? '' : 'disabled'}>증거 보드</button>
+        <button data-action="briefing" ${isSolved(state) ? '' : 'disabled'}>보고서</button>
         <button data-action="reset">처음부터</button>
       </nav>
       <div class="progress" aria-label="단서 진행도">
@@ -214,7 +226,7 @@ function renderBoard() {
         <ul>
           ${chapter.links.map(renderLinkStatus).join('')}
         </ul>
-        ${solved ? renderFinalChoice() : '<p class="boardHint">단서 카드 두 개를 차례로 눌러 관계를 확인하세요.</p>'}
+        ${solved ? renderBriefingGate() : '<p class="boardHint">단서 카드 두 개를 차례로 눌러 관계를 확인하세요.</p>'}
       </div>
     </section>
   `;
@@ -240,6 +252,88 @@ function renderLinkStatus(link) {
   const a = chapter.clues.find((clue) => clue.id === link.a);
   const b = chapter.clues.find((clue) => clue.id === link.b);
   return `<li class="${done ? 'done' : ''}">${a.title} + ${b.title}</li>`;
+}
+
+function renderBriefingGate() {
+  return `
+    <div class="finalChoice">
+      <p class="caseCode">NEXT STEP</p>
+      <h3>증거만으로는 아직 끝나지 않았습니다</h3>
+      <p>친구들이 오해하지 않도록, 탐정단 보고서를 먼저 완성해야 합니다.</p>
+      <button data-action="briefing">
+        <span>사건 보고서 작성</span>
+        <small>사실을 순서대로 정리하기</small>
+      </button>
+    </div>
+  `;
+}
+
+function renderBriefing() {
+  const expectedCount = chapter.briefing.correctOrder.length;
+  return `
+    <section class="briefingScreen">
+      <div class="briefingIntro">
+        <p class="caseCode">CASE REPORT</p>
+        <h2>${chapter.briefing.title}</h2>
+        <p>${chapter.briefing.body}</p>
+      </div>
+      <div class="reportDesk">
+        <section class="reportPaper">
+          <div class="reportStamp">DRAFT</div>
+          <h3>4학년 2반 쿠폰 사건 보고서</h3>
+          <ol class="reportSlots">
+            ${chapter.briefing.slots.map((slot, index) => renderReportSlot(slot, index)).join('')}
+          </ol>
+          <div class="reportActions">
+            <button data-action="clear-briefing" ${state.briefingReady ? 'disabled' : ''}>다시 쓰기</button>
+            <button class="primaryAction compact" data-action="submit-briefing" ${state.briefingReady ? 'disabled' : ''}>
+              보고서 제출
+            </button>
+          </div>
+        </section>
+        <aside class="lineBank">
+          <div class="terminalHeader">
+            <span>문장 카드</span>
+            <b>${state.briefing.length}/${expectedCount}</b>
+          </div>
+          <div class="briefingLines">
+            ${chapter.briefing.lines.map(renderBriefingLine).join('')}
+          </div>
+          ${state.briefingReady ? renderFinalChoice() : '<p class="boardHint">기록 → 오늘 확인 → 가능한 이유 → 말하는 태도 순서로 보고서를 완성하세요.</p>'}
+        </aside>
+      </div>
+    </section>
+  `;
+}
+
+function renderReportSlot(slot, index) {
+  const lineId = state.briefing[index];
+  const line = chapter.briefing.lines.find((item) => item.id === lineId);
+  return `
+    <li class="${line ? 'filled' : ''}">
+      <span>${slot}</span>
+      ${
+        line
+          ? `<button data-action="remove-briefing" data-value="${line.id}" ${state.briefingReady ? 'disabled' : ''}>${line.text}</button>`
+          : '<em>문장 카드를 선택하세요.</em>'
+      }
+    </li>
+  `;
+}
+
+function renderBriefingLine(line) {
+  const used = state.briefing.includes(line.id);
+  return `
+    <button
+      class="briefingLine ${used ? 'used' : ''}"
+      data-action="select-briefing"
+      data-value="${line.id}"
+      ${used || state.briefingReady ? 'disabled' : ''}
+    >
+      <span>${line.label}</span>
+      <b>${line.text}</b>
+    </button>
+  `;
 }
 
 function renderFinalChoice() {

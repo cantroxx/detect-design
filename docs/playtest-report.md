@@ -7,7 +7,7 @@ Date: 2026-07-07
 - Product: 디지털 탐정단: 사라진 학급 쿠폰
 - URL: http://127.0.0.1:5176/app/
 - Target player: elementary grade 4
-- Focus: complete story flow from title to prologue, dialogue clue collection, evidence board, and ending
+- Focus: complete story flow from title to prologue, dialogue clue collection, evidence board, case report, and ending
 
 ## Desktop Flow
 
@@ -29,9 +29,11 @@ Passed.
    - 쿠폰 기록표 + 쿠폰 상자
    - 청소 당번표 + 발표 준비 메모
    - 발표 준비 메모 + 쿠폰 상자
-10. Confirmed the final choice panel appears only after all evidence links are solved.
-11. Confirmed reset returns to the menu and clears progress.
-12. Confirmed a wrong evidence pair shows feedback without breaking the game state.
+10. Confirmed the case report screen opens after all evidence links are solved.
+11. Confirmed endings stay locked until the report is submitted in the correct order.
+12. Confirmed the final choice panel appears only after the report is complete.
+13. Confirmed reset returns to the menu and clears progress.
+14. Confirmed a wrong evidence pair shows feedback without breaking the game state.
 
 ## Ending Coverage
 
@@ -64,6 +66,8 @@ Static module paths now include a version query so browsers and static hosts do 
 The game now uses a story-first structure: title dossier, prologue slides, dialogue-gated clue collection, case HUD, locked board state, and final decision panel.
 
 Dialogue controls now keep a minimum 44px touch height on mobile.
+
+The evidence board no longer jumps directly to endings. A case report step was added so players must organize the facts before choosing how to speak to the class.
 
 ## Console
 

@@ -405,6 +405,9 @@ button:not(:disabled):hover {
 
 .caseTerminal,
 .boardIntro,
+.briefingIntro,
+.reportPaper,
+.lineBank,
 .linkPanel,
 .endingScreen {
   border: 1px solid var(--line);
@@ -498,27 +501,162 @@ button:not(:disabled):hover {
   padding: 18px;
 }
 
+.briefingScreen {
+  display: grid;
+  gap: 18px;
+  padding: 18px;
+}
+
 .boardIntro {
   grid-column: 1 / -1;
   padding: 18px;
 }
 
+.briefingIntro {
+  padding: 18px;
+}
+
 .boardIntro h2,
 .boardIntro p,
+.briefingIntro h2,
+.briefingIntro p,
 .endingScreen h2,
 .endingScreen p {
   margin: 0;
 }
 
-.boardIntro h2 {
+.boardIntro h2,
+.briefingIntro h2 {
   margin-top: 6px;
   font-size: 1.7rem;
 }
 
-.boardIntro p:not(.caseCode) {
+.boardIntro p:not(.caseCode),
+.briefingIntro p:not(.caseCode) {
   margin-top: 8px;
   color: #43515f;
   line-height: 1.6;
+}
+
+.reportDesk {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  gap: 18px;
+  align-items: start;
+}
+
+.reportPaper {
+  position: relative;
+  padding: 22px;
+  background:
+    linear-gradient(rgba(255, 253, 246, 0.92), rgba(255, 253, 246, 0.92)),
+    repeating-linear-gradient(0deg, transparent 0 32px, rgba(79, 128, 201, 0.12) 33px);
+}
+
+.reportStamp {
+  position: absolute;
+  right: 18px;
+  top: 18px;
+  color: rgba(216, 109, 114, 0.72);
+  border: 2px solid rgba(216, 109, 114, 0.38);
+  border-radius: 6px;
+  padding: 5px 9px;
+  font-weight: 900;
+  transform: rotate(4deg);
+}
+
+.reportPaper h3 {
+  margin: 0 92px 18px 0;
+  font-size: 1.4rem;
+}
+
+.reportSlots {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding-left: 20px;
+}
+
+.reportSlots li {
+  min-height: 78px;
+  padding: 12px;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.58);
+}
+
+.reportSlots li.filled {
+  border-style: solid;
+  background: #f5fff8;
+}
+
+.reportSlots span {
+  display: block;
+  color: var(--green-dark);
+  font-size: 0.74rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.reportSlots button {
+  width: 100%;
+  margin-top: 7px;
+  padding: 10px;
+  text-align: left;
+  line-height: 1.55;
+  background: #fffdf6;
+}
+
+.reportSlots em {
+  display: block;
+  margin-top: 10px;
+  color: var(--muted);
+  font-style: normal;
+}
+
+.reportActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.reportActions button {
+  min-height: 44px;
+  padding: 10px 14px;
+}
+
+.lineBank {
+  padding: 16px;
+}
+
+.briefingLines {
+  display: grid;
+  gap: 9px;
+  margin-top: 14px;
+}
+
+.briefingLine {
+  min-height: 72px;
+  display: grid;
+  gap: 4px;
+  padding: 11px;
+  text-align: left;
+}
+
+.briefingLine span {
+  color: var(--blue);
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.briefingLine b {
+  line-height: 1.45;
+  font-weight: 700;
+}
+
+.briefingLine.used {
+  background: #e5f8eb;
 }
 
 .boardGrid {
@@ -738,7 +876,8 @@ button:not(:disabled):hover {
 
   .topBar,
   .sceneScreen,
-  .boardScreen {
+  .boardScreen,
+  .reportDesk {
     grid-template-columns: 1fr;
   }
 
@@ -753,7 +892,8 @@ button:not(:disabled):hover {
   }
 
   .sceneScreen,
-  .boardScreen {
+  .boardScreen,
+  .briefingScreen {
     padding-bottom: 82px;
   }
 
@@ -789,8 +929,13 @@ button:not(:disabled):hover {
     justify-content: stretch;
   }
 
-  .introActions button {
+  .introActions button,
+  .reportActions button {
     flex: 1;
+  }
+
+  .reportActions {
+    display: flex;
   }
 
   .hotspot {

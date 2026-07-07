@@ -7,6 +7,8 @@ export function createInitialState() {
     collected: [],
     selected: null,
     links: [],
+    briefing: [],
+    briefingReady: false,
     dialogue: null,
     message: '사건 파일 대기 중',
     ending: null
@@ -154,6 +156,88 @@ export function connectClues(state, a, b) {
   };
 }
 
+export function openBriefing(state) {
+  if (!isSolved(state)) {
+    return {
+      ...state,
+      message: '증거 보드의 관계를 먼저 모두 확인하세요.'
+    };
+  }
+  return {
+    ...state,
+    screen: 'briefing',
+    message: chapter.mission.briefing
+  };
+}
+
+export function selectBriefingLine(state, lineId) {
+  if (!chapter.briefing.lines.some((line) => line.id === lineId)) return state;
+  if (state.briefingReady) {
+    return {
+      ...state,
+      message: '보고서는 이미 완성되었습니다. 이제 말하는 방식을 선택하세요.'
+    };
+  }
+  if (state.briefing.includes(lineId)) {
+    return {
+      ...state,
+      message: '이미 보고서에 넣은 문장입니다.'
+    };
+  }
+  if (state.briefing.length >= chapter.briefing.correctOrder.length) {
+    return {
+      ...state,
+      message: '보고서 칸이 가득 찼습니다. 다시 쓰려면 지우기를 누르세요.'
+    };
+  }
+  return {
+    ...state,
+    briefing: [...state.briefing, lineId],
+    message: '보고서 문장을 추가했습니다.'
+  };
+}
+
+export function removeBriefingLine(state, lineId) {
+  if (state.briefingReady) return state;
+  return {
+    ...state,
+    briefing: state.briefing.filter((id) => id !== lineId),
+    message: '보고서 문장을 뺐습니다.'
+  };
+}
+
+export function clearBriefing(state) {
+  if (state.briefingReady) return state;
+  return {
+    ...state,
+    briefing: [],
+    message: '보고서를 비웠습니다.'
+  };
+}
+
+export function submitBriefing(state) {
+  const expected = chapter.briefing.correctOrder;
+  if (state.briefing.length < expected.length) {
+    return {
+      ...state,
+      message: `보고서 문장 ${expected.length}개를 순서대로 채워야 합니다.`
+    };
+  }
+  const correct = expected.every((lineId, index) => state.briefing[index] === lineId);
+  if (!correct) {
+    return {
+      ...state,
+      briefing: [],
+      message: '순서가 맞지 않습니다. 기록 → 오늘 확인 → 이유 → 태도 순서로 다시 정리하세요.'
+    };
+  }
+  return {
+    ...state,
+    briefingReady: true,
+    message: '사건 보고서 완성. 이제 교실에 어떻게 말할지 선택하세요.'
+  };
+}
+
 export function canOpenBoard(state) {
   return requiredClueIds.every((id) => state.collected.includes(id));
 }
@@ -165,6 +249,12 @@ export function isSolved(state) {
 export function chooseEnding(state, ending) {
   const endingData = chapter.endings[ending];
   if (!endingData) return state;
+  if (!state.briefingReady) {
+    return {
+      ...state,
+      message: '사건 보고서를 완성한 뒤 말하는 방식을 선택하세요.'
+    };
+  }
   return {
     ...state,
     screen: 'ending',
