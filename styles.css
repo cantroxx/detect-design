@@ -705,23 +705,7 @@ button:not(:disabled):hover {
 }
 
 .hotspot span {
-  position: absolute;
-  left: 50%;
-  bottom: calc(100% + 6px);
-  transform: translateX(-50%);
-  white-space: nowrap;
-  border-radius: 999px;
-  padding: 5px 9px;
-  background: rgba(29, 38, 48, 0.9);
-  color: #fff;
-  font-size: 0.78rem;
-  font-weight: 800;
-  visibility: hidden;
-}
-
-.hotspot:hover span,
-.hotspot:focus-visible span {
-  visibility: visible;
+  display: none;
 }
 
 .caseTerminal,
@@ -924,7 +908,7 @@ button:not(:disabled):hover {
 
 .reportSlots span {
   display: block;
-  color: var(--green-dark);
+  color: #5b6875;
   font-size: 0.74rem;
   font-weight: 900;
   letter-spacing: 0;
@@ -977,7 +961,7 @@ button:not(:disabled):hover {
 }
 
 .briefingLine span {
-  color: var(--blue);
+  color: #687482;
   font-size: 0.72rem;
   font-weight: 900;
 }
@@ -1081,7 +1065,7 @@ button:not(:disabled):hover {
 }
 
 .boardNode small {
-  color: var(--green-dark);
+  color: #65717e;
   font-weight: 800;
 }
 
@@ -1097,6 +1081,41 @@ button:not(:disabled):hover {
   margin: 0;
 }
 
+.linkPanel .subheading {
+  margin-top: 16px;
+}
+
+.selectedClue {
+  display: grid;
+  gap: 7px;
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid rgba(34, 42, 51, 0.12);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.62);
+}
+
+.selectedClue span {
+  color: var(--blue);
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.selectedClue b {
+  font-size: 1rem;
+}
+
+.selectedClue p {
+  margin: 0;
+  color: #43515f;
+  line-height: 1.55;
+}
+
+.selectedClue.empty {
+  border-style: dashed;
+  background: rgba(242, 242, 236, 0.68);
+}
+
 .linkPanel ul {
   list-style: none;
   padding: 0;
@@ -1110,20 +1129,26 @@ button:not(:disabled):hover {
   gap: 5px;
   padding: 11px;
   border-radius: 8px;
+  border: 1px dashed rgba(34, 42, 51, 0.14);
   background: #f2f2ec;
   color: var(--muted);
 }
 
 .linkPanel li.done {
+  border-style: solid;
   background: #e5f8eb;
   color: var(--green-dark);
   font-weight: 900;
 }
 
 .linkPanel li span {
-  color: var(--blue);
+  color: #687482;
   font-size: 0.72rem;
   font-weight: 900;
+}
+
+.linkPanel li.done span {
+  color: var(--green-dark);
 }
 
 .linkPanel li small {

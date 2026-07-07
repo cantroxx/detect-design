@@ -107,6 +107,18 @@ Applied after the campaign pass.
 - Hotspot overlays were made lighter so the scan frame marks objects without visually swallowing neighboring scene areas.
 - Ending screen was changed into a case-close report with a stamp, detective style panel, next case or campaign ending, and cumulative case log.
 
+## Hint Reduction Pass
+
+Applied after observing that the puzzle could be solved by following visible labels.
+
+- Hover labels on scene hotspots were removed because they made the screen feel busy.
+- Unsolved evidence connector lines are no longer drawn on the board.
+- The relationship log now hides clue pair names until a correct connection is discovered.
+- Evidence nodes no longer show short answer-like summaries by default.
+- The selected clue detail appears in the side panel only after the player clicks a clue.
+- Report slots and sentence cards no longer share matching semantic labels.
+- Sentence cards are displayed in a shuffled order so players must read the sentence content.
+
 ## Console
 
 No browser console errors were observed during the full ending pass.

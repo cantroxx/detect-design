@@ -1,4 +1,4 @@
-import { campaign, cases } from '../domain/gameData.js?v=20260707-osui1';
+import { campaign, cases } from '../domain/gameData.js?v=20260707-osui2';
 import {
   advanceDialogue,
   advanceIntro,
@@ -24,7 +24,7 @@ import {
   skipIntro,
   startCase,
   submitBriefing
-} from '../application/gameEngine.js?v=20260707-osui1';
+} from '../application/gameEngine.js?v=20260707-osui2';
 
 let state = createInitialState();
 const boardNodePositions = [
@@ -32,6 +32,13 @@ const boardNodePositions = [
   { x: 66, y: 20 },
   { x: 24, y: 70 },
   { x: 72, y: 68 }
+];
+const briefingDisplayOrder = [2, 4, 0, 5, 1, 3];
+const reportStepPrompts = [
+  '처음 확인한 사실',
+  '다음으로 확인한 사실',
+  '두 사실을 이어 생각한 이유',
+  '친구에게 말하는 방법'
 ];
 
 export function mount(root) {
@@ -336,11 +343,13 @@ function renderBoard() {
           ${activeCase.clues.map(renderBoardNode).join('')}
         </section>
         <div class="linkPanel">
-          <h3>관계 로그</h3>
+          <h3>단서 검토</h3>
+          ${renderSelectedCluePanel()}
+          <h3 class="subheading">관계 로그</h3>
           <ul>
             ${activeCase.links.map(renderLinkStatus).join('')}
           </ul>
-          ${solved ? renderBriefingGate() : '<p class="boardHint">단서 파일 두 개를 차례로 눌러 연결선을 활성화하세요.</p>'}
+          ${solved ? renderBriefingGate() : '<p class="boardHint">단서의 문장 내용을 읽고 관련 있어 보이는 두 파일을 직접 골라 보세요.</p>'}
         </div>
       </div>
     </section>
@@ -360,7 +369,7 @@ function renderBoardNode(clue, index) {
     >
       <span>${clue.type}</span>
       <b>${clue.title}</b>
-      <small>${clue.short}</small>
+      <small>${selected ? '선택 중' : '파일 열기'}</small>
     </button>
   `;
 }
@@ -375,6 +384,8 @@ function renderBoardLine(link) {
   const a = boardNodePositions[aIndex] ?? { x: 50, y: 50 };
   const b = boardNodePositions[bIndex] ?? { x: 50, y: 50 };
   const done = progress.links.includes(linkKey(link.a, link.b));
+  if (!done) return '';
+
   const selected = progress.selected === link.a || progress.selected === link.b;
   return `
     <line
@@ -387,6 +398,27 @@ function renderBoardLine(link) {
   `;
 }
 
+function renderSelectedCluePanel() {
+  const activeCase = getActiveCase(state);
+  const progress = getCaseProgress(state);
+  const selected = activeCase.clues.find((clue) => clue.id === progress.selected);
+  if (!selected) {
+    return `
+      <div class="selectedClue empty">
+        <span>대기 중</span>
+        <p>먼저 단서 하나를 선택하면 자세한 기록이 열립니다.</p>
+      </div>
+    `;
+  }
+  return `
+    <div class="selectedClue">
+      <span>${selected.type}</span>
+      <b>${selected.title}</b>
+      <p>${selected.body}</p>
+    </div>
+  `;
+}
+
 function renderLinkStatus(link) {
   const activeCase = getActiveCase(state);
   const progress = getCaseProgress(state);
@@ -395,8 +427,8 @@ function renderLinkStatus(link) {
   const b = activeCase.clues.find((clue) => clue.id === link.b);
   return `
     <li class="${done ? 'done' : ''}">
-      <span>${done ? '연결 완료' : '대기 중'}</span>
-      <b>${a.title} + ${b.title}</b>
+      <span>${done ? '연결 완료' : '미확인'}</span>
+      <b>${done ? `${a.title} + ${b.title}` : '아직 발견하지 못한 관계'}</b>
       ${done ? `<small>${link.reason}</small>` : ''}
     </li>
   `;
@@ -447,23 +479,24 @@ function renderBriefing() {
             <b>${progress.briefing.length}/${expectedCount}</b>
           </div>
           <div class="briefingLines">
-            ${activeCase.briefing.lines.map(renderBriefingLine).join('')}
+            ${getBriefingLinesForDisplay(activeCase).map(renderBriefingLine).join('')}
           </div>
-          ${progress.briefingReady ? renderFinalChoice() : '<p class="boardHint">기록 → 확인 → 가능한 이유 → 말하는 태도 순서로 보고서를 완성하세요.</p>'}
+          ${progress.briefingReady ? renderFinalChoice() : '<p class="boardHint">문장 라벨이 아니라 내용을 읽고, 사건이 이해되는 순서로 보고서를 완성하세요.</p>'}
         </aside>
       </div>
     </section>
   `;
 }
 
-function renderReportSlot(slot, index) {
+function renderReportSlot(_slot, index) {
   const activeCase = getActiveCase(state);
   const progress = getCaseProgress(state);
   const lineId = progress.briefing[index];
   const line = activeCase.briefing.lines.find((item) => item.id === lineId);
+  const prompt = reportStepPrompts[index] ?? `${index + 1}번째 문장`;
   return `
     <li class="${line ? 'filled' : ''}">
-      <span>${slot}</span>
+      <span>${prompt}</span>
       ${
         line
           ? `<button data-action="remove-briefing" data-value="${line.id}" ${progress.briefingReady ? 'disabled' : ''}>${line.text}</button>`
@@ -473,7 +506,13 @@ function renderReportSlot(slot, index) {
   `;
 }
 
-function renderBriefingLine(line) {
+function getBriefingLinesForDisplay(activeCase) {
+  return briefingDisplayOrder
+    .map((index) => activeCase.briefing.lines[index])
+    .filter(Boolean);
+}
+
+function renderBriefingLine(line, index) {
   const progress = getCaseProgress(state);
   const used = progress.briefing.includes(line.id);
   return `
@@ -483,7 +522,7 @@ function renderBriefingLine(line) {
       data-value="${line.id}"
       ${used || progress.briefingReady ? 'disabled' : ''}
     >
-      <span>${line.label}</span>
+      <span>문장 카드 ${index + 1}</span>
       <b>${line.text}</b>
     </button>
   `;

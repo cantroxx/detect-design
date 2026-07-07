@@ -286,7 +286,7 @@ export function submitBriefing(state) {
     return updateCaseProgress(
       state,
       { briefing: [] },
-      '순서가 맞지 않습니다. 기록 → 확인 → 이유 → 태도 순서로 다시 정리하세요.'
+      '순서가 맞지 않습니다. 먼저 사실을 확인하고, 그다음 이유와 말하는 방법을 다시 생각해 보세요.'
     );
   }
   return updateCaseProgress(
