@@ -1,4 +1,4 @@
-import { campaign, chapter } from '../domain/gameData.js?v=20260707-campaign1';
+import { campaign, cases } from '../domain/gameData.js?v=20260707-campaign5';
 import {
   advanceDialogue,
   advanceIntro,
@@ -6,19 +6,25 @@ import {
   chooseEnding,
   clearBriefing,
   createInitialState,
+  getActiveCase,
+  getCaseProgress,
+  getCaseStatus,
   getDetectiveProfile,
+  getNextCase,
+  isCampaignComplete,
   isSolved,
   linkKey,
   openBriefing,
   openHotspot,
   removeBriefingLine,
-  selectClue,
+  resolveCampaignEnding,
   selectBriefingLine,
+  selectClue,
   showMenu,
   skipIntro,
-  submitBriefing,
-  startCase
-} from '../application/gameEngine.js?v=20260707-campaign1';
+  startCase,
+  submitBriefing
+} from '../application/gameEngine.js?v=20260707-campaign5';
 
 let state = createInitialState();
 
@@ -35,15 +41,16 @@ function onClick(event) {
   const type = action.dataset.action;
   const value = action.dataset.value;
   const previousScreen = state.screen;
+  const activeCase = getActiveCase(state);
 
-  if (type === 'start') state = startCase(state);
+  if (type === 'start') state = startCase(state, value || activeCase.id);
   else if (type === 'reset') state = createInitialState();
   else if (type === 'menu') state = showMenu(state);
   else if (type === 'intro-next') state = advanceIntro(state);
   else if (type === 'intro-skip') state = skipIntro(state);
-  else if (type === 'scene') state = { ...state, screen: 'scene', message: chapter.mission.scene };
+  else if (type === 'scene') state = { ...state, screen: 'scene', message: activeCase.mission.scene };
   else if (type === 'board' && canOpenBoard(state)) {
-    state = { ...state, screen: 'board', message: chapter.mission.board };
+    state = { ...state, screen: 'board', message: activeCase.mission.board };
   } else if (type === 'hotspot') state = openHotspot(state, value);
   else if (type === 'dialogue-next') state = advanceDialogue(state);
   else if (type === 'select-clue') state = selectClue(state, value);
@@ -75,41 +82,45 @@ function render(root) {
 }
 
 function renderHeader() {
-  const count = state.collected.length;
+  const activeCase = getActiveCase(state);
+  const progress = getCaseProgress(state);
   const boardUnlocked = canOpenBoard(state);
   return `
     <header class="topBar">
       <div class="caseHud">
-        <p class="eyebrow">${chapter.code} · ${chapter.clock}</p>
-        <h1>${chapter.title}</h1>
+        <p class="eyebrow">${activeCase.code} · ${activeCase.clock}</p>
+        <h1>${activeCase.title}</h1>
       </div>
       <nav class="topActions" aria-label="게임 이동">
-        <button data-action="scene">교실</button>
+        <button data-action="scene">${activeCase.location}</button>
         <button data-action="board" ${boardUnlocked ? '' : 'disabled'}>증거 보드</button>
         <button data-action="briefing" ${isSolved(state) ? '' : 'disabled'}>보고서</button>
-        <button data-action="reset">처음부터</button>
+        <button data-action="menu">사건 파일</button>
       </nav>
       <div class="progress" aria-label="단서 진행도">
-        <span>${count}</span><small>/ ${chapter.clues.length}</small>
+        <span>${progress.collected.length}</span><small>/ ${activeCase.clues.length}</small>
       </div>
     </header>
   `;
 }
 
 function renderMenu() {
+  const nextCase = getNextCase(state) ?? cases[0];
   return `
     <section class="menuScreen">
       <div class="menuScan" aria-hidden="true"></div>
       <div class="menuLayout">
         <div class="menuCopy">
-          <p class="caseCode">${chapter.code}</p>
-          <h2>${chapter.title}</h2>
-          <p class="menuSub">${chapter.subtitle}</p>
+          <p class="caseCode">CAMPAIGN</p>
+          <h2>디지털 탐정단</h2>
+          <p class="menuSub">5개의 생활 추리 사건</p>
           <p>
-            조회 전 조용한 4학년 교실. 칭찬 쿠폰 상자의 숫자가 맞지 않습니다.
-            서로 의심하기 전에, 탐정단은 기록과 말을 차례로 확인해야 합니다.
+            4학년 교실과 학교 곳곳에서 생긴 작은 오해를 기록, 배려, 협력으로 해결합니다.
+            사건 선택이 쌓이면 마지막 캠페인 엔딩이 달라집니다.
           </p>
-          <button class="primaryAction" data-action="start">새 사건 시작</button>
+          <button class="primaryAction" data-action="start" data-value="${nextCase.id}">
+            ${state.caseRecords.length === 0 ? '첫 사건 시작' : isCampaignComplete(state) ? '처음부터 다시 시작' : '다음 사건 시작'}
+          </button>
         </div>
         ${renderCampaignPanel()}
       </div>
@@ -123,7 +134,7 @@ function renderCampaignPanel() {
     <aside class="caseFiles" aria-label="${campaign.title}">
       <div class="terminalHeader">
         <span>${campaign.title}</span>
-        <b>${state.caseRecords.length}/${campaign.cases.length}</b>
+        <b>${state.caseRecords.length}/${cases.length}</b>
       </div>
       <p>${campaign.subtitle}</p>
       <div class="detectiveBadge">
@@ -131,44 +142,66 @@ function renderCampaignPanel() {
         <b>${profile.title}</b>
         <small>${profile.body}</small>
       </div>
+      ${renderCampaignStats()}
       <div class="caseFileList">
-        ${campaign.cases.map((caseItem, index) => renderCaseFile(caseItem, index)).join('')}
+        ${cases.map(renderCaseFile).join('')}
       </div>
     </aside>
   `;
 }
 
-function renderCaseFile(caseItem, index) {
-  const record = state.caseRecords.find((item) => item.caseId === caseItem.id);
-  const solvedFirstCase = state.caseRecords.some((item) => item.caseId === chapter.id);
-  const isNextOpen = caseItem.status === 'next' && solvedFirstCase;
-  const status = record ? '해결됨' : index === 0 ? '진행 가능' : isNextOpen ? '다음 사건' : '잠김';
+function renderCampaignStats() {
   return `
-    <article class="caseFile ${record ? 'solved' : ''} ${isNextOpen ? 'nextOpen' : ''}">
+    <div class="campaignStats">
+      ${Object.entries(campaign.statLabels)
+        .map(
+          ([key, label]) => `
+            <span class="${key === 'rumorRisk' && state.campaignStats[key] > 0 ? 'risk' : ''}">
+              <b>${label}</b>${state.campaignStats[key] ?? 0}
+            </span>
+          `
+        )
+        .join('')}
+    </div>
+  `;
+}
+
+function renderCaseFile(caseItem) {
+  const record = state.caseRecords.find((item) => item.caseId === caseItem.id);
+  const status = getCaseStatus(state, caseItem.id);
+  const locked = status === '잠김';
+  return `
+    <button
+      class="caseFile ${record ? 'solved' : ''} ${!locked && !record ? 'nextOpen' : ''}"
+      data-action="start"
+      data-value="${caseItem.id}"
+      ${locked ? 'disabled' : ''}
+    >
       <span>${caseItem.code} · ${status}</span>
       <h3>${caseItem.title}</h3>
-      <p>${record ? `${record.styleTitle} 기록으로 종결` : caseItem.summary}</p>
-    </article>
+      <p>${record ? `${record.styleTitle} 기록으로 종결 · 다시 조사 가능` : caseItem.summary}</p>
+    </button>
   `;
 }
 
 function renderIntro() {
-  const slide = chapter.introSlides[state.introIndex];
-  const isLast = state.introIndex === chapter.introSlides.length - 1;
+  const activeCase = getActiveCase(state);
+  const slide = activeCase.introSlides[state.introIndex];
+  const isLast = state.introIndex === activeCase.introSlides.length - 1;
   return `
-    <section class="introScreen">
+    <section class="introScreen" style="background-image: linear-gradient(rgba(29, 38, 48, 0.78), rgba(29, 38, 48, 0.68)), url('${activeCase.sceneImage}')">
       <div class="introBackdrop" aria-hidden="true"></div>
       <div class="introFrame">
         <div class="introMeta">
           <span>${slide.kicker}</span>
-          <span>${String(state.introIndex + 1).padStart(2, '0')} / ${String(chapter.introSlides.length).padStart(2, '0')}</span>
+          <span>${String(state.introIndex + 1).padStart(2, '0')} / ${String(activeCase.introSlides.length).padStart(2, '0')}</span>
         </div>
         <h2>${slide.title}</h2>
         <p>${slide.body}</p>
-        <div class="introMission">${chapter.mission.intro}</div>
+        <div class="introMission">${activeCase.mission.intro}</div>
         <div class="introActions">
           <button data-action="intro-skip">건너뛰기</button>
-          <button class="primaryAction compact" data-action="intro-next">${isLast ? '교실로 들어가기' : '다음'}</button>
+          <button class="primaryAction compact" data-action="intro-next">${isLast ? `${activeCase.location}로 이동` : '다음'}</button>
         </div>
       </div>
     </section>
@@ -176,15 +209,16 @@ function renderIntro() {
 }
 
 function renderScene() {
+  const activeCase = getActiveCase(state);
   return `
     <section class="sceneScreen">
       <div class="sceneStage">
         <div class="sceneFrame">
-          <img src="${chapter.sceneImage}" alt="따뜻한 4학년 교실" />
-          ${chapter.hotspots.map(renderHotspot).join('')}
+          <img src="${activeCase.sceneImage}" alt="${activeCase.location} 사건 장면" />
+          ${activeCase.hotspots.map(renderHotspot).join('')}
         </div>
         <div class="sceneCaption">
-          <b>${chapter.location}</b>
+          <b>${activeCase.location}</b>
           <span>${sceneCaption()}</span>
         </div>
       </div>
@@ -194,13 +228,15 @@ function renderScene() {
 }
 
 function sceneCaption() {
+  const progress = getCaseProgress(state);
   if (canOpenBoard(state)) return '필요한 단서는 모였습니다. 이제 증거 보드에서 관계를 정리하세요.';
-  if (state.collected.length === 0) return '친구들의 말이 커지기 전에, 먼저 조용히 살펴봅니다.';
+  if (progress.collected.length === 0) return '말이 커지기 전에, 먼저 조용히 살펴봅니다.';
   return '새 단서가 탐정 노트에 붙었습니다. 아직 빠진 조각이 있습니다.';
 }
 
 function renderHotspot(hotspot) {
-  const found = state.collected.includes(hotspot.clueId);
+  const progress = getCaseProgress(state);
+  const found = progress.collected.includes(hotspot.clueId);
   return `
     <button
       class="hotspot ${found ? 'found' : 'pulse'}"
@@ -215,6 +251,7 @@ function renderHotspot(hotspot) {
 }
 
 function renderCaseTerminal() {
+  const activeCase = getActiveCase(state);
   const boardUnlocked = canOpenBoard(state);
   return `
     <aside class="caseTerminal">
@@ -224,11 +261,11 @@ function renderCaseTerminal() {
       </div>
       <section class="missionBlock">
         <p class="caseCode">CURRENT MISSION</p>
-        <h2>${boardUnlocked ? '증거 보드 열기' : '교실 조사'}</h2>
-        <p>${boardUnlocked ? chapter.mission.board : chapter.mission.scene}</p>
+        <h2>${boardUnlocked ? '증거 보드 열기' : activeCase.location}</h2>
+        <p>${boardUnlocked ? activeCase.mission.board : activeCase.mission.scene}</p>
       </section>
       <div class="clueList">
-        ${chapter.clues.map(renderClueRow).join('')}
+        ${activeCase.clues.map(renderClueRow).join('')}
       </div>
       <button class="terminalAction" data-action="board" ${boardUnlocked ? '' : 'disabled'}>
         증거 보드 접속
@@ -238,32 +275,34 @@ function renderCaseTerminal() {
 }
 
 function renderClueRow(clue) {
-  const found = state.collected.includes(clue.id);
+  const progress = getCaseProgress(state);
+  const found = progress.collected.includes(clue.id);
   return `
     <article class="clueCard ${found ? 'found' : ''}">
       <span>${found ? clue.type : '미확인'}</span>
       <h3>${found ? clue.title : '???'}</h3>
-      <p>${found ? clue.body : '교실 안 어딘가에 아직 확인하지 못한 단서가 있습니다.'}</p>
+      <p>${found ? clue.body : '이 사건 장면 안 어딘가에 아직 확인하지 못한 단서가 있습니다.'}</p>
     </article>
   `;
 }
 
 function renderBoard() {
+  const activeCase = getActiveCase(state);
   const solved = isSolved(state);
   return `
     <section class="boardScreen">
       <div class="boardIntro">
         <p class="caseCode">EVIDENCE BOARD</p>
         <h2>말보다 먼저, 단서를 연결합니다</h2>
-        <p>${chapter.mission.board}</p>
+        <p>${activeCase.mission.board}</p>
       </div>
       <div class="boardGrid">
-        ${chapter.clues.map(renderBoardNode).join('')}
+        ${activeCase.clues.map(renderBoardNode).join('')}
       </div>
       <div class="linkPanel">
         <h3>확인한 관계</h3>
         <ul>
-          ${chapter.links.map(renderLinkStatus).join('')}
+          ${activeCase.links.map(renderLinkStatus).join('')}
         </ul>
         ${solved ? renderBriefingGate() : '<p class="boardHint">단서 카드 두 개를 차례로 눌러 관계를 확인하세요.</p>'}
       </div>
@@ -272,7 +311,8 @@ function renderBoard() {
 }
 
 function renderBoardNode(clue) {
-  const selected = state.selected === clue.id;
+  const progress = getCaseProgress(state);
+  const selected = progress.selected === clue.id;
   return `
     <button
       class="boardNode ${selected ? 'selected' : ''}"
@@ -287,9 +327,11 @@ function renderBoardNode(clue) {
 }
 
 function renderLinkStatus(link) {
-  const done = state.links.includes(linkKey(link.a, link.b));
-  const a = chapter.clues.find((clue) => clue.id === link.a);
-  const b = chapter.clues.find((clue) => clue.id === link.b);
+  const activeCase = getActiveCase(state);
+  const progress = getCaseProgress(state);
+  const done = progress.links.includes(linkKey(link.a, link.b));
+  const a = activeCase.clues.find((clue) => clue.id === link.a);
+  const b = activeCase.clues.find((clue) => clue.id === link.b);
   return `<li class="${done ? 'done' : ''}">${a.title} + ${b.title}</li>`;
 }
 
@@ -298,7 +340,7 @@ function renderBriefingGate() {
     <div class="finalChoice">
       <p class="caseCode">NEXT STEP</p>
       <h3>증거만으로는 아직 끝나지 않았습니다</h3>
-      <p>친구들이 오해하지 않도록, 탐정단 보고서를 먼저 완성해야 합니다.</p>
+      <p>오해가 남지 않도록, 탐정단 보고서를 먼저 완성해야 합니다.</p>
       <button data-action="briefing">
         <span>사건 보고서 작성</span>
         <small>사실을 순서대로 정리하기</small>
@@ -308,24 +350,26 @@ function renderBriefingGate() {
 }
 
 function renderBriefing() {
-  const expectedCount = chapter.briefing.correctOrder.length;
+  const activeCase = getActiveCase(state);
+  const progress = getCaseProgress(state);
+  const expectedCount = activeCase.briefing.correctOrder.length;
   return `
     <section class="briefingScreen">
       <div class="briefingIntro">
         <p class="caseCode">CASE REPORT</p>
-        <h2>${chapter.briefing.title}</h2>
-        <p>${chapter.briefing.body}</p>
+        <h2>${activeCase.briefing.title}</h2>
+        <p>${activeCase.briefing.body}</p>
       </div>
       <div class="reportDesk">
         <section class="reportPaper">
           <div class="reportStamp">DRAFT</div>
-          <h3>4학년 쿠폰 사건 보고서</h3>
+          <h3>${activeCase.briefing.reportTitle}</h3>
           <ol class="reportSlots">
-            ${chapter.briefing.slots.map((slot, index) => renderReportSlot(slot, index)).join('')}
+            ${activeCase.briefing.slots.map((slot, index) => renderReportSlot(slot, index)).join('')}
           </ol>
           <div class="reportActions">
-            <button data-action="clear-briefing" ${state.briefingReady ? 'disabled' : ''}>다시 쓰기</button>
-            <button class="primaryAction compact" data-action="submit-briefing" ${state.briefingReady ? 'disabled' : ''}>
+            <button data-action="clear-briefing" ${progress.briefingReady ? 'disabled' : ''}>다시 쓰기</button>
+            <button class="primaryAction compact" data-action="submit-briefing" ${progress.briefingReady ? 'disabled' : ''}>
               보고서 제출
             </button>
           </div>
@@ -333,12 +377,12 @@ function renderBriefing() {
         <aside class="lineBank">
           <div class="terminalHeader">
             <span>문장 카드</span>
-            <b>${state.briefing.length}/${expectedCount}</b>
+            <b>${progress.briefing.length}/${expectedCount}</b>
           </div>
           <div class="briefingLines">
-            ${chapter.briefing.lines.map(renderBriefingLine).join('')}
+            ${activeCase.briefing.lines.map(renderBriefingLine).join('')}
           </div>
-          ${state.briefingReady ? renderFinalChoice() : '<p class="boardHint">기록 → 오늘 확인 → 가능한 이유 → 말하는 태도 순서로 보고서를 완성하세요.</p>'}
+          ${progress.briefingReady ? renderFinalChoice() : '<p class="boardHint">기록 → 확인 → 가능한 이유 → 말하는 태도 순서로 보고서를 완성하세요.</p>'}
         </aside>
       </div>
     </section>
@@ -346,14 +390,16 @@ function renderBriefing() {
 }
 
 function renderReportSlot(slot, index) {
-  const lineId = state.briefing[index];
-  const line = chapter.briefing.lines.find((item) => item.id === lineId);
+  const activeCase = getActiveCase(state);
+  const progress = getCaseProgress(state);
+  const lineId = progress.briefing[index];
+  const line = activeCase.briefing.lines.find((item) => item.id === lineId);
   return `
     <li class="${line ? 'filled' : ''}">
       <span>${slot}</span>
       ${
         line
-          ? `<button data-action="remove-briefing" data-value="${line.id}" ${state.briefingReady ? 'disabled' : ''}>${line.text}</button>`
+          ? `<button data-action="remove-briefing" data-value="${line.id}" ${progress.briefingReady ? 'disabled' : ''}>${line.text}</button>`
           : '<em>문장 카드를 선택하세요.</em>'
       }
     </li>
@@ -361,13 +407,14 @@ function renderReportSlot(slot, index) {
 }
 
 function renderBriefingLine(line) {
-  const used = state.briefing.includes(line.id);
+  const progress = getCaseProgress(state);
+  const used = progress.briefing.includes(line.id);
   return `
     <button
       class="briefingLine ${used ? 'used' : ''}"
       data-action="select-briefing"
       data-value="${line.id}"
-      ${used || state.briefingReady ? 'disabled' : ''}
+      ${used || progress.briefingReady ? 'disabled' : ''}
     >
       <span>${line.label}</span>
       <b>${line.text}</b>
@@ -376,12 +423,13 @@ function renderBriefingLine(line) {
 }
 
 function renderFinalChoice() {
+  const activeCase = getActiveCase(state);
   return `
     <div class="finalChoice">
       <p class="caseCode">FINAL DECISION</p>
-      <h3>${chapter.finalChoice.title}</h3>
-      <p>${chapter.finalChoice.body}</p>
-      ${Object.entries(chapter.endings)
+      <h3>${activeCase.finalChoice.title}</h3>
+      <p>${activeCase.finalChoice.body}</p>
+      ${Object.entries(activeCase.endings)
         .map(
           ([id, ending]) => `
             <button data-action="ending" data-value="${id}">
@@ -396,11 +444,15 @@ function renderFinalChoice() {
 }
 
 function renderEnding() {
-  const ending = chapter.endings[state.ending];
+  const activeCase = getActiveCase(state);
+  const progress = getCaseProgress(state);
+  const ending = activeCase.endings[progress.ending];
   const profile = getDetectiveProfile(state);
+  const nextCase = getNextCase(state);
+  const complete = isCampaignComplete(state);
   return `
     <section class="endingScreen">
-      <p class="caseCode">CASE CLOSED</p>
+      <p class="caseCode">${activeCase.code} CLOSED</p>
       <h2>${ending.title}</h2>
       <p>${ending.body}</p>
       <div class="lesson">${ending.lesson}</div>
@@ -412,16 +464,31 @@ function renderEnding() {
           <p>${profile.body}</p>
         </section>
         <section class="nextCaseReport">
-          <p class="caseCode">NEXT CASE</p>
-          <h3>${campaign.cases[1].title}</h3>
-          <p>${profile.nextHook}</p>
+          <p class="caseCode">${complete ? 'CAMPAIGN ENDING' : 'NEXT CASE'}</p>
+          <h3>${complete ? resolveCampaignEnding(state).title : nextCase.title}</h3>
+          <p>${complete ? '모든 사건 기록을 바탕으로 최종 캠페인 엔딩이 열렸습니다.' : profile.nextHook}</p>
         </section>
       </div>
       ${renderCaseRecord()}
+      ${complete ? renderCampaignEnding() : ''}
       <div class="endingActions">
-        <button class="primaryAction" data-action="menu">사건 파일 보기</button>
-        <button data-action="start">CASE 01 다시 플레이</button>
+        ${nextCase ? `<button class="primaryAction" data-action="start" data-value="${nextCase.id}">다음 사건 시작</button>` : ''}
+        <button data-action="menu">사건 파일 보기</button>
+        <button data-action="start" data-value="${activeCase.id}">${activeCase.code} 다시 플레이</button>
       </div>
+    </section>
+  `;
+}
+
+function renderCampaignEnding() {
+  const finalEnding = resolveCampaignEnding(state);
+  return `
+    <section class="finalCampaign">
+      <p class="caseCode">${finalEnding.code}</p>
+      <h3>${finalEnding.title}</h3>
+      <p>${finalEnding.body}</p>
+      <div>${finalEnding.epilogue}</div>
+      ${renderCampaignStats()}
     </section>
   `;
 }
@@ -430,7 +497,9 @@ function renderCaseRecord() {
   return `
     <section class="caseRecord">
       <p class="caseCode">CASE LOG</p>
-      ${state.caseRecords
+      ${cases
+        .map((caseItem) => state.caseRecords.find((record) => record.caseId === caseItem.id))
+        .filter(Boolean)
         .map(
           (record) => `
             <article>

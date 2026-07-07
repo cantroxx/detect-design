@@ -4,16 +4,17 @@
 
 Current game:
 
-- Title: 디지털 탐정단: 사라진 칭찬 쿠폰
+- Title: 디지털 탐정단 사건 파일
 - Target: elementary grade 4
 - Format: static HTML/CSS/JavaScript
-- Flow: case file hub -> prologue -> dialogue-based clue collection -> evidence board -> case report -> ending choice -> detective style / next case preview
+- Flow: case file hub -> CASE 01~05 -> dialogue-based clue collection -> evidence board -> case report -> case ending -> final campaign ending
 
 Campaign note:
 
-- CASE 01 is playable.
-- The menu and ending now keep a case log and detective style record.
-- CASE 02 and CASE 03 are staged as follow-up case files so later work can branch from the player's CASE 01 style.
+- CASE 01~05 are playable.
+- The menu keeps unlock state, case log, campaign stats, and detective style record.
+- Each case ending changes campaign stats.
+- After CASE 05, the accumulated stats resolve one final campaign ending.
 
 ## Run Locally
 

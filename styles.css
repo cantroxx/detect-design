@@ -234,10 +234,14 @@ button:not(:disabled):hover {
 }
 
 .caseFile {
+  width: 100%;
+  display: block;
   padding: 12px;
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 8px;
   background: rgba(255, 253, 246, 0.08);
+  color: #fffdf6;
+  text-align: left;
 }
 
 .caseFile.solved {
@@ -259,6 +263,35 @@ button:not(:disabled):hover {
   color: rgba(255, 253, 246, 0.74);
   line-height: 1.45;
   font-size: 0.9rem;
+}
+
+.campaignStats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.campaignStats span {
+  min-height: 46px;
+  display: grid;
+  align-content: center;
+  gap: 2px;
+  padding: 8px;
+  border-radius: 8px;
+  background: rgba(255, 253, 246, 0.08);
+  color: #fffdf6;
+  font-weight: 900;
+}
+
+.campaignStats span.risk {
+  border: 1px solid rgba(216, 109, 114, 0.5);
+  color: #ffd8db;
+}
+
+.campaignStats b {
+  color: rgba(255, 253, 246, 0.68);
+  font-size: 0.7rem;
 }
 
 .introScreen {
@@ -936,6 +969,37 @@ button:not(:disabled):hover {
 .caseRecord small {
   color: var(--muted);
   line-height: 1.4;
+}
+
+.finalCampaign {
+  margin-top: 12px;
+  padding: 18px;
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(29, 38, 48, 0.94), rgba(57, 116, 90, 0.88)),
+    var(--night);
+  color: #fffdf6;
+}
+
+.finalCampaign h3 {
+  margin: 8px 0 0;
+  font-size: 1.55rem;
+}
+
+.finalCampaign p {
+  color: rgba(255, 253, 246, 0.86);
+}
+
+.finalCampaign > div:not(.campaignStats) {
+  margin-top: 12px;
+  padding: 14px;
+  border-radius: 8px;
+  background: rgba(255, 253, 246, 0.1);
+  line-height: 1.7;
+}
+
+.finalCampaign .campaignStats span {
+  background: rgba(255, 253, 246, 0.12);
 }
 
 .endingActions {

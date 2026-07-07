@@ -4,10 +4,10 @@ Date: 2026-07-07
 
 ## Scope
 
-- Product: 디지털 탐정단: 사라진 칭찬 쿠폰
+- Product: 디지털 탐정단 사건 파일
 - URL: http://127.0.0.1:5176/app/
 - Target player: elementary grade 4
-- Focus: complete story flow from case file hub to prologue, dialogue clue collection, evidence board, case report, ending, detective style, and next case preview
+- Focus: complete campaign flow from case file hub through CASE 01~05, dialogue clue collection, evidence board, case report, case ending, and final campaign ending
 
 ## Desktop Flow
 
@@ -32,7 +32,8 @@ Passed.
 10. Confirmed the case report screen opens after all evidence links are solved.
 11. Confirmed endings stay locked until the report is submitted in the correct order.
 12. Confirmed the ending records CASE 01 in the case log and derives a detective style.
-13. Confirmed the menu presents CASE 02 and CASE 03 as follow-up case files instead of making CASE 01 feel like a standalone game.
+13. Confirmed CASE 02~05 unlock one by one after the previous case is solved.
+14. Confirmed final campaign endings resolve from accumulated campaign stats.
 12. Confirmed the final choice panel appears only after the report is complete.
 13. Confirmed reset returns to the menu and clears progress.
 14. Confirmed a wrong evidence pair shows feedback without breaking the game state.
@@ -71,11 +72,29 @@ Dialogue controls now keep a minimum 44px touch height on mobile.
 
 The evidence board no longer jumps directly to endings. A case report step was added so players must organize the facts before choosing how to speak to the class.
 
-The ending now carries campaign state: CASE LOG, DETECTIVE STYLE, and NEXT CASE preview. This mirrors the reference structure where chapter endings leave a record and point to the next chapter.
+The ending now carries campaign state: CASE LOG, DETECTIVE STYLE, NEXT CASE, campaign stats, and final campaign ending. This mirrors the reference structure where chapter endings leave a record and point to the next chapter.
+
+## Campaign Pass
+
+All 5 cases passed through the deterministic engine path:
+
+- CASE 01: 사라진 칭찬 쿠폰
+- CASE 02: 도서관 대출 카드의 빈칸
+- CASE 03: 운동장 시간표의 두 이름
+- CASE 04: 익명 게시판의 이상한 댓글
+- CASE 05: 사라진 탐정 노트
+
+Verified ending branches:
+
+- All `kind` choices -> `함께 해결하는 탐정단`
+- All `careful` choices -> `기록의 탐정단`
+- Mixed `kind`, `careful`, and `rushed` choices -> `마음을 잇는 탐정단`
+- Mixed low-threshold recovery path -> `성장하는 탐정단`
+- All `rushed` choices -> `소문을 멈춘 탐정단`
 
 ## Hotspot Adjustment
 
-The classroom hotspots were tightened to actual objects: the small record note, the duty chart, the coupon box, and the presentation materials. Large visible overlay rectangles should no longer cover neighboring boards or shelves.
+The classroom hotspots were tightened to actual objects: the small record note, the duty chart, the coupon box, and the presentation materials. Large visible overlay rectangles should no longer cover neighboring boards or shelves. CASE 02~05 scene backgrounds were generated with imagegen and copied into `public/scenes`.
 
 ## Console
 
