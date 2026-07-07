@@ -12,6 +12,8 @@ Current game:
 Campaign note:
 
 - CASE 01~05 are playable.
+- Each case has 8 candidate observations: 4 relevant evidence files and 4 distracting or low-value files.
+- Each case has 5 ending choices.
 - The menu keeps unlock state, case log, campaign stats, and detective style record.
 - Each case ending changes campaign stats.
 - After CASE 05, the accumulated stats resolve one final campaign ending.

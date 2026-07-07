@@ -49,7 +49,7 @@ button:disabled {
   opacity: 0.48;
 }
 
-button:not(:disabled):hover {
+button:not(:disabled):hover:not(.boardNode):not(.hotspot) {
   transform: translateY(-1px);
   box-shadow: 0 8px 18px var(--shadow);
 }
@@ -756,6 +756,10 @@ button:not(:disabled):hover {
 .clueList {
   display: grid;
   gap: 10px;
+  max-height: 48vh;
+  overflow: auto;
+  padding-right: 4px;
+  scrollbar-color: rgba(88, 200, 189, 0.52) rgba(34, 42, 51, 0.08);
 }
 
 .clueCard {
@@ -984,7 +988,7 @@ button:not(:disabled):hover {
 
 .boardCanvas {
   position: relative;
-  min-height: clamp(520px, 66vh, 720px);
+  min-height: clamp(660px, 76vh, 820px);
   border: 1px solid rgba(88, 200, 189, 0.26);
   border-radius: 8px;
   overflow: hidden;
@@ -1058,6 +1062,11 @@ button:not(:disabled):hover {
 .boardNode.selected {
   outline: 4px solid rgba(244, 184, 74, 0.5);
   background: var(--paper-strong);
+}
+
+.boardNode:not(:disabled):hover {
+  transform: translate(-50%, -50%);
+  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.28);
 }
 
 .boardNode b {
@@ -1485,7 +1494,7 @@ button:not(:disabled):hover {
   }
 
   .boardCanvas {
-    min-height: 620px;
+    min-height: 760px;
   }
 
   .boardNode {
@@ -1558,13 +1567,30 @@ button:not(:disabled):hover {
   }
 
   .boardCanvas {
-    min-height: 640px;
+    min-height: auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .boardLines,
+  .boardWatermark {
+    display: none;
   }
 
   .boardNode {
-    width: min(156px, 36%);
+    position: static;
+    left: auto;
+    top: auto;
+    transform: none;
+    width: 100%;
     min-height: 118px;
     padding: 12px;
+  }
+
+  .boardNode:not(:disabled):hover {
+    transform: none;
   }
 
   .boardNode b {

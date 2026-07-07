@@ -119,6 +119,21 @@ Applied after observing that the puzzle could be solved by following visible lab
 - Report slots and sentence cards no longer share matching semantic labels.
 - Sentence cards are displayed in a shuffled order so players must read the sentence content.
 
+## Candidate Expansion Pass
+
+Applied after observing that 4 obvious evidence files still made the board too easy.
+
+- Each case now exposes 8 scene candidates: 4 relevant evidence files and 4 distracting or low-value observations.
+- The board unlocks after all 8 candidates are collected, then asks the player to identify the 3 meaningful relationships.
+- The right-side clue list now scrolls internally so the larger candidate pool does not stretch the scene layout.
+- Board hover jitter was fixed by excluding board nodes from the global button hover transform.
+- Each case now has 5 ending choices instead of 3: careful, kind, rushed, teamwork, and guardian.
+- Campaign endings were expanded with guardian and balanced final outcomes.
+
+Verification notes:
+
+- CASE 01 local pass confirmed 8 hotspots, 8 collected candidates, 8 board nodes, 0 pre-solved lines, 3 solved relationship lines, and 5 ending choices.
+
 ## Console
 
 No browser console errors were observed during the full ending pass.

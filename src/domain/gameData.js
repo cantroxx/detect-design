@@ -13,6 +13,16 @@ const styleEndings = {
     styleId: 'reflective',
     statDeltas: { caution: 1, rumorRisk: 1 },
     title: '다시 확인하는 탐정'
+  },
+  team: {
+    styleId: 'teamwork',
+    statDeltas: { teamwork: 2, empathy: 1 },
+    title: '협력형 탐정'
+  },
+  guard: {
+    styleId: 'guardian',
+    statDeltas: { record: 1, caution: 2, rumorRisk: -1 },
+    title: '멈춤 신호 탐정'
   }
 };
 
@@ -631,6 +641,152 @@ export const cases = [
   }
 ];
 
+const extraEvidenceByCase = {
+  'coupon-case': [
+    { id: 'sunlight', title: '창가 햇빛 자국', type: '장소', body: '창가 책상에 길게 비친 햇빛 자국입니다. 쿠폰 상자나 봉투와 직접 이어지는 흔적은 보이지 않습니다.', short: '직접 관련 낮음' },
+    { id: 'water-bottle', title: '이름 없는 물병', type: '물건', body: '책상 위 물병에는 이름표가 없지만, 쿠폰이나 발표 자료가 닿은 흔적은 없습니다.', short: '생활 물건' },
+    { id: 'star-doodle', title: '칠판 별 그림', type: '그림', body: '칠판 구석의 별 그림은 어제 미술 시간에 남은 낙서입니다.', short: '수업 흔적' },
+    { id: 'desk-notebook', title: '책상 위 공책', type: '물건', body: '공책에는 오늘 받아쓰기 연습이 적혀 있고 쿠폰 숫자와는 관련이 없습니다.', short: '수업 공책' }
+  ],
+  'library-card-case': [
+    { id: 'clock', title: '도서관 시계', type: '물건', body: '도서관 시계는 정상적으로 움직이고 있지만, 대출 카드 빈칸의 이유를 직접 알려 주지는 않습니다.', short: '시간 표시' },
+    { id: 'pencil-cup', title: '연필꽂이', type: '물건', body: '대출대 옆 연필꽂이입니다. 연필은 정리되어 있고 기록이 지워진 흔적은 없습니다.', short: '정리됨' },
+    { id: 'poster', title: '독서 포스터', type: '게시물', body: '이번 달 독서 행사 포스터입니다. 책 제목과 대출 카드 빈칸은 연결되지 않습니다.', short: '행사 안내' },
+    { id: 'chair', title: '빈 의자', type: '장소', body: '책장 옆 빈 의자입니다. 누가 앉았는지는 알 수 있지만 책의 위치를 설명하지는 못합니다.', short: '앉은 자리' }
+  ],
+  'playground-time-case': [
+    { id: 'water-mark', title: '물병 자국', type: '흔적', body: '벤치에 둥근 물병 자국이 남아 있습니다. 두 모둠의 예약 시간과 직접 관련되지는 않습니다.', short: '생활 흔적' },
+    { id: 'traffic-cone', title: '주황색 콘', type: '물건', body: '운동장 가장자리의 안전 콘입니다. 평소에도 놓여 있던 물건입니다.', short: '안전 표시' },
+    { id: 'whistle', title: '낡은 호루라기', type: '물건', body: '장비함 안쪽의 낡은 호루라기입니다. 오늘 사용 기록은 없습니다.', short: '미사용' },
+    { id: 'sand-print', title: '모래 발자국', type: '흔적', body: '여러 친구가 지나간 발자국이라 어느 모둠의 약속을 가리키는지는 알 수 없습니다.', short: '여러 흔적' }
+  ],
+  'comment-case': [
+    { id: 'mouse-pad', title: '마우스패드', type: '물건', body: '마우스패드는 제자리에 놓여 있고 댓글 내용과 연결되는 메모는 없습니다.', short: '제자리' },
+    { id: 'charging-cable', title: '충전 케이블', type: '물건', body: '책상 아래 충전 케이블입니다. 컴퓨터 사용 순서와 직접 연결되지는 않습니다.', short: '케이블' },
+    { id: 'window-reflection', title: '창문 반사', type: '화면', body: '창문에 모니터 빛이 비친 모습입니다. 댓글 작성 기록을 확인하기에는 부족합니다.', short: '반사' },
+    { id: 'empty-chair', title: '빈 자리', type: '장소', body: '빈 의자는 누군가 자리를 비운 흔적일 수 있지만, 댓글을 쓴 사람을 단정할 수 없습니다.', short: '빈 자리' }
+  ],
+  'detective-notebook-case': [
+    { id: 'old-sticker', title: '낡은 스티커', type: '물건', body: '예전 행사 스티커입니다. 탐정 노트가 보관된 이유와 직접 관련은 없습니다.', short: '예전 행사' },
+    { id: 'paper-clip', title: '빈 클립', type: '물건', body: '책상 위 빈 클립입니다. 폴더가 빠진 이유를 설명하기에는 단서가 부족합니다.', short: '정리 도구' },
+    { id: 'old-poster', title: '지난 달 포스터', type: '게시물', body: '지난 달 안내 포스터입니다. 이번 최종 정리 기록과는 시기가 맞지 않습니다.', short: '지난 안내' },
+    { id: 'color-pencil', title: '색연필 통', type: '물건', body: '색연필 통에는 여러 색이 섞여 있지만 사건 파일 순서를 알려 주지는 않습니다.', short: '꾸미기 도구' }
+  ]
+};
+
+const extraHotspotsByCase = {
+  'coupon-case': [
+    { id: 'sunlight-desk', label: '창가 책상', rect: { l: 0.8, t: 42.5, w: 12.6, h: 11.4 }, clueId: 'sunlight' },
+    { id: 'water-bottle', label: '물병', rect: { l: 73.4, t: 66.2, w: 4.8, h: 7.8 }, clueId: 'water-bottle' },
+    { id: 'chalk-star', label: '별 그림', rect: { l: 90.4, t: 19.2, w: 5.2, h: 7.8 }, clueId: 'star-doodle' },
+    { id: 'desk-notebook', label: '공책', rect: { l: 71.2, t: 82.8, w: 14.4, h: 8.6 }, clueId: 'desk-notebook' }
+  ],
+  'library-card-case': [
+    { id: 'library-clock', label: '시계', rect: { l: 75.2, t: 8.2, w: 7.2, h: 8.4 }, clueId: 'clock' },
+    { id: 'pencil-cup', label: '연필꽂이', rect: { l: 70.8, t: 67.5, w: 5.8, h: 8.8 }, clueId: 'pencil-cup' },
+    { id: 'reading-poster', label: '포스터', rect: { l: 9.5, t: 15.8, w: 12.2, h: 16.8 }, clueId: 'poster' },
+    { id: 'library-chair', label: '빈 의자', rect: { l: 81.4, t: 70.8, w: 10.4, h: 15.4 }, clueId: 'chair' }
+  ],
+  'playground-time-case': [
+    { id: 'water-mark', label: '물병 자국', rect: { l: 62.8, t: 70.8, w: 6.8, h: 5.4 }, clueId: 'water-mark' },
+    { id: 'traffic-cone', label: '안전 콘', rect: { l: 18.8, t: 60.8, w: 6.4, h: 12.8 }, clueId: 'traffic-cone' },
+    { id: 'whistle', label: '호루라기', rect: { l: 11.8, t: 70.6, w: 6.2, h: 5.6 }, clueId: 'whistle' },
+    { id: 'sand-print', label: '발자국', rect: { l: 48.6, t: 82.8, w: 11.8, h: 7.8 }, clueId: 'sand-print' }
+  ],
+  'comment-case': [
+    { id: 'mouse-pad', label: '마우스패드', rect: { l: 66.2, t: 68.8, w: 9.8, h: 8.2 }, clueId: 'mouse-pad' },
+    { id: 'charging-cable', label: '충전 케이블', rect: { l: 34.4, t: 81.2, w: 12.4, h: 6.8 }, clueId: 'charging-cable' },
+    { id: 'window-reflection', label: '창문 반사', rect: { l: 10.6, t: 13.4, w: 15.2, h: 21.4 }, clueId: 'window-reflection' },
+    { id: 'empty-chair', label: '빈 자리', rect: { l: 16.4, t: 67.8, w: 12.8, h: 15.2 }, clueId: 'empty-chair' }
+  ],
+  'detective-notebook-case': [
+    { id: 'old-sticker', label: '낡은 스티커', rect: { l: 20.4, t: 44.2, w: 8.2, h: 6.8 }, clueId: 'old-sticker' },
+    { id: 'paper-clip', label: '빈 클립', rect: { l: 60.2, t: 55.6, w: 6.4, h: 5.8 }, clueId: 'paper-clip' },
+    { id: 'old-poster', label: '지난 포스터', rect: { l: 80.2, t: 14.4, w: 10.8, h: 20.8 }, clueId: 'old-poster' },
+    { id: 'color-pencil', label: '색연필 통', rect: { l: 16.6, t: 69.8, w: 10.2, h: 12.8 }, clueId: 'color-pencil' }
+  ]
+};
+
+const expandedEndingsByCase = {
+  'coupon-case': {
+    team: {
+      ...styleEndings.team,
+      choice: '역할을 나눠 봉투를 찾는다',
+      body: '기록 담당, 봉투 확인 담당, 친구 설명 담당을 나누어 발표 자료 봉투를 함께 찾았습니다.',
+      lesson: '여러 사람이 역할을 나누면 오해를 줄이고 더 빨리 확인할 수 있어요.'
+    },
+    guard: {
+      ...styleEndings.guard,
+      choice: '소문부터 멈추게 한다',
+      body: '탐정단은 누가 가져갔다는 말을 멈추게 하고, 확인된 기록만 교실에 알렸습니다.',
+      lesson: '확인되지 않은 말은 잠깐 멈추는 것만으로도 친구를 지킬 수 있어요.'
+    }
+  },
+  'library-card-case': {
+    team: {
+      ...styleEndings.team,
+      choice: '도서부와 반납함을 나눠 확인한다',
+      body: '한 명은 대출 카드를 고치고, 한 명은 반납함을 정리하며 책 위치를 함께 확인했습니다.',
+      lesson: '기록과 물건을 함께 맡아 확인하면 빠진 부분을 더 쉽게 찾을 수 있어요.'
+    },
+    guard: {
+      ...styleEndings.guard,
+      choice: '누가 빌렸다는 말을 멈춘다',
+      body: '탐정단은 이름 없는 빈칸만 보고 친구를 말하지 않기로 하고, 먼저 반납함을 확인했습니다.',
+      lesson: '이름이 비어 있을수록 조심해서 말해야 해요.'
+    }
+  },
+  'playground-time-case': {
+    team: {
+      ...styleEndings.team,
+      choice: '두 모둠이 시간을 나눠 쓴다',
+      body: '탐정단은 두 모둠 대표와 함께 최신 메모를 보고 운동장 사용 시간을 나누었습니다.',
+      lesson: '갈등을 함께 조정하면 한쪽만 이기는 결론보다 오래 갑니다.'
+    },
+    guard: {
+      ...styleEndings.guard,
+      choice: '먼저 편들지 않기로 한다',
+      body: '누가 맞는지 바로 정하지 않고, 오래된 시간표와 최신 메모를 구분한 뒤 말했습니다.',
+      lesson: '편을 들기 전에 자료의 날짜를 멈춰 보고 확인해야 해요.'
+    }
+  },
+  'comment-case': {
+    team: {
+      ...styleEndings.team,
+      choice: '게시글 정리 역할을 나눈다',
+      body: '한 명은 선생님께 알리고, 한 명은 캡처 공유를 멈추자고 말하며 게시글을 함께 정리했습니다.',
+      lesson: '온라인 문제도 혼자 해결하기보다 역할을 나누면 더 안전해요.'
+    },
+    guard: {
+      ...styleEndings.guard,
+      choice: '캡처 공유를 먼저 멈춘다',
+      body: '탐정단은 사실 확인 전까지 캡처를 보내지 않기로 하고, 불편한 친구가 더 다치지 않게 막았습니다.',
+      lesson: '디지털 공간에서는 멈춤 버튼을 누르는 판단도 중요한 해결입니다.'
+    }
+  },
+  'detective-notebook-case': {
+    team: {
+      ...styleEndings.team,
+      choice: '사건 파일을 함께 다시 정리한다',
+      body: '탐정단은 앞선 사건 파일을 나누어 정리하고, 마지막 노트를 보관 위치에 다시 넣었습니다.',
+      lesson: '캠페인의 마지막도 함께 정리하면 다음 사건을 더 잘 준비할 수 있어요.'
+    },
+    guard: {
+      ...styleEndings.guard,
+      choice: '누가 숨겼다는 말을 멈춘다',
+      body: '탐정단은 노트를 숨겼다는 추측을 멈추고 보관 표시와 폴더 기록을 먼저 확인했습니다.',
+      lesson: '마지막 사건일수록 익숙한 추측을 멈추고 다시 확인해야 해요.'
+    }
+  }
+};
+
+cases.forEach((caseItem) => {
+  caseItem.endings = {
+    ...caseItem.endings,
+    ...(expandedEndingsByCase[caseItem.id] ?? {})
+  };
+});
+
 export const campaign = {
   title: '디지털 탐정단 사건 파일',
   subtitle: '사건을 해결할수록 나만의 탐정 스타일과 마지막 캠페인 엔딩이 달라집니다.',
@@ -670,6 +826,20 @@ export const campaign = {
       trait: '다시 확인',
       body: '성급했던 판단을 되돌아보고, 다음에는 한 번 더 확인하려는 태도가 남습니다.',
       nextHook: '다음 사건에서 확인 체크리스트가 더 눈에 들어옵니다.'
+    },
+    teamwork: {
+      id: 'teamwork',
+      title: '협력형 탐정',
+      trait: '역할 나누기',
+      body: '혼자 결론을 내리지 않고, 기록 담당과 대화 담당을 나누어 함께 해결합니다.',
+      nextHook: '다음 사건에서 누가 어떤 역할로 확인할지 먼저 떠올리게 됩니다.'
+    },
+    guardian: {
+      id: 'guardian',
+      title: '멈춤 신호 탐정',
+      trait: '소문 차단',
+      body: '확인되지 않은 말을 퍼뜨리기 전에 잠깐 멈추고, 친구를 지키는 판단에 강합니다.',
+      nextHook: '다음 사건에서 공유하기 전 멈춤 신호를 먼저 확인하게 됩니다.'
     }
   },
   finalEndings: {
@@ -702,6 +872,18 @@ export const campaign = {
       title: '소문을 멈춘 탐정단',
       body: '확인 없이 퍼진 말 때문에 친구들이 잠시 속상했습니다. 하지만 탐정단은 마지막에 소문을 멈추고 사실을 다시 정리했습니다.',
       epilogue: '캠페인의 마지막 약속은 짧았습니다. “확인하지 않은 말은 멈추기.”'
+    },
+    guardian: {
+      code: 'ENDING F',
+      title: '멈춤 신호 탐정단',
+      body: '탐정단은 모든 사건에서 빠른 말보다 잠깐 멈추는 판단을 배웠습니다. 덕분에 소문은 짧아지고 확인은 길어졌습니다.',
+      epilogue: '교실 단말기에는 새 버튼이 생겼습니다. “공유 전 확인.”'
+    },
+    balanced: {
+      code: 'ENDING G',
+      title: '균형 잡힌 탐정단',
+      body: '탐정단은 기록, 마음, 협력, 다시 확인을 고르게 사용했습니다. 한 가지 방식만 고집하지 않고 사건마다 필요한 태도를 골랐습니다.',
+      epilogue: '마지막 탐정 노트에는 “사건마다 다른 도구가 필요하다”라고 적혔습니다.'
     }
   }
 };
@@ -709,7 +891,27 @@ export const campaign = {
 export const caseById = Object.fromEntries(cases.map((caseItem) => [caseItem.id, caseItem]));
 export const firstCaseId = cases[0].id;
 export const chapter = cases[0];
-export const requiredClueIds = chapter.clues.map((clue) => clue.id);
+export const requiredClueIds = getEvidenceItems(chapter).map((clue) => clue.id);
+
+export function getEvidenceItems(caseItem) {
+  return [...caseItem.clues, ...(extraEvidenceByCase[caseItem.id] ?? [])];
+}
+
+export function getCaseHotspots(caseItem) {
+  const extraHotspots = (extraHotspotsByCase[caseItem.id] ?? []).map((hotspot) => ({
+    ...hotspot,
+    dialogue: createExtraHotspotDialogue(caseItem, hotspot)
+  }));
+  return [...caseItem.hotspots, ...extraHotspots];
+}
+
+function createExtraHotspotDialogue(caseItem, hotspot) {
+  const clue = getEvidenceItems(caseItem).find((item) => item.id === hotspot.clueId);
+  return [
+    { speaker: '나', text: `${hotspot.label}도 확인해 보자. 사건과 연결될 수도, 그냥 지나가는 정보일 수도 있어.` },
+    { speaker: '탐정 노트', text: clue?.body ?? '사건과 직접 이어지는 기록은 아직 보이지 않는다.' }
+  ];
+}
 
 export function getCaseById(caseId) {
   return caseById[caseId] ?? cases[0];

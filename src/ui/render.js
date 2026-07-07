@@ -1,4 +1,4 @@
-import { campaign, cases } from '../domain/gameData.js?v=20260707-osui2';
+import { campaign, cases, getCaseHotspots, getEvidenceItems } from '../domain/gameData.js?v=20260707-osui3';
 import {
   advanceDialogue,
   advanceIntro,
@@ -24,14 +24,18 @@ import {
   skipIntro,
   startCase,
   submitBriefing
-} from '../application/gameEngine.js?v=20260707-osui2';
+} from '../application/gameEngine.js?v=20260707-osui3';
 
 let state = createInitialState();
 const boardNodePositions = [
-  { x: 18, y: 28 },
-  { x: 66, y: 20 },
-  { x: 24, y: 70 },
-  { x: 72, y: 68 }
+  { x: 16, y: 20 },
+  { x: 50, y: 16 },
+  { x: 80, y: 24 },
+  { x: 18, y: 50 },
+  { x: 52, y: 46 },
+  { x: 82, y: 54 },
+  { x: 28, y: 78 },
+  { x: 68, y: 78 }
 ];
 const briefingDisplayOrder = [2, 4, 0, 5, 1, 3];
 const reportStepPrompts = [
@@ -97,6 +101,7 @@ function render(root) {
 function renderHeader() {
   const activeCase = getActiveCase(state);
   const progress = getCaseProgress(state);
+  const evidenceItems = getEvidenceItems(activeCase);
   const boardUnlocked = canOpenBoard(state);
   return `
     <header class="topBar">
@@ -115,7 +120,7 @@ function renderHeader() {
         <button data-action="menu"><span class="navIcon fileIcon" aria-hidden="true"></span>파일</button>
       </nav>
       <div class="progress" aria-label="단서 진행도">
-        <span>${progress.collected.length}</span><small>/ ${activeCase.clues.length}</small>
+        <span>${progress.collected.length}</span><small>/ ${evidenceItems.length}</small>
       </div>
     </header>
   `;
@@ -248,12 +253,13 @@ function renderIntro() {
 
 function renderScene() {
   const activeCase = getActiveCase(state);
+  const hotspots = getCaseHotspots(activeCase);
   return `
     <section class="sceneScreen">
       <div class="sceneStage">
         <div class="sceneFrame">
           <img src="${activeCase.sceneImage}" alt="${activeCase.location} 사건 장면" />
-          ${activeCase.hotspots.map(renderHotspot).join('')}
+          ${hotspots.map(renderHotspot).join('')}
         </div>
         <div class="sceneCaption">
           <b>${activeCase.location}</b>
@@ -291,6 +297,7 @@ function renderHotspot(hotspot) {
 function renderCaseTerminal() {
   const activeCase = getActiveCase(state);
   const boardUnlocked = canOpenBoard(state);
+  const evidenceItems = getEvidenceItems(activeCase);
   return `
     <aside class="caseTerminal">
       <div class="terminalHeader">
@@ -303,7 +310,7 @@ function renderCaseTerminal() {
         <p>${boardUnlocked ? activeCase.mission.board : activeCase.mission.scene}</p>
       </section>
       <div class="clueList">
-        ${activeCase.clues.map(renderClueRow).join('')}
+        ${evidenceItems.map(renderClueRow).join('')}
       </div>
       <button class="terminalAction" data-action="board" ${boardUnlocked ? '' : 'disabled'}>
         증거 보드 접속
@@ -326,13 +333,14 @@ function renderClueRow(clue) {
 
 function renderBoard() {
   const activeCase = getActiveCase(state);
+  const evidenceItems = getEvidenceItems(activeCase);
   const solved = isSolved(state);
   return `
     <section class="boardScreen">
       <div class="boardIntro">
         <p class="caseCode">EVIDENCE BOARD</p>
         <h2>말보다 먼저, 단서를 연결합니다</h2>
-        <p>${activeCase.mission.board}</p>
+        <p>${activeCase.mission.board} 후보 파일 ${evidenceItems.length}개 중 사건과 이어지는 관계를 찾아보세요.</p>
       </div>
       <div class="boardWorkspace">
         <section class="boardCanvas" aria-label="${activeCase.title} 증거 관계도">
@@ -340,7 +348,7 @@ function renderBoard() {
           <svg class="boardLines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
             ${activeCase.links.map(renderBoardLine).join('')}
           </svg>
-          ${activeCase.clues.map(renderBoardNode).join('')}
+          ${evidenceItems.map(renderBoardNode).join('')}
         </section>
         <div class="linkPanel">
           <h3>단서 검토</h3>
@@ -377,8 +385,9 @@ function renderBoardNode(clue, index) {
 function renderBoardLine(link) {
   const activeCase = getActiveCase(state);
   const progress = getCaseProgress(state);
-  const aIndex = activeCase.clues.findIndex((clue) => clue.id === link.a);
-  const bIndex = activeCase.clues.findIndex((clue) => clue.id === link.b);
+  const evidenceItems = getEvidenceItems(activeCase);
+  const aIndex = evidenceItems.findIndex((clue) => clue.id === link.a);
+  const bIndex = evidenceItems.findIndex((clue) => clue.id === link.b);
   if (aIndex < 0 || bIndex < 0) return '';
 
   const a = boardNodePositions[aIndex] ?? { x: 50, y: 50 };
@@ -401,7 +410,7 @@ function renderBoardLine(link) {
 function renderSelectedCluePanel() {
   const activeCase = getActiveCase(state);
   const progress = getCaseProgress(state);
-  const selected = activeCase.clues.find((clue) => clue.id === progress.selected);
+  const selected = getEvidenceItems(activeCase).find((clue) => clue.id === progress.selected);
   if (!selected) {
     return `
       <div class="selectedClue empty">
@@ -423,8 +432,9 @@ function renderLinkStatus(link) {
   const activeCase = getActiveCase(state);
   const progress = getCaseProgress(state);
   const done = progress.links.includes(linkKey(link.a, link.b));
-  const a = activeCase.clues.find((clue) => clue.id === link.a);
-  const b = activeCase.clues.find((clue) => clue.id === link.b);
+  const evidenceItems = getEvidenceItems(activeCase);
+  const a = evidenceItems.find((clue) => clue.id === link.a);
+  const b = evidenceItems.find((clue) => clue.id === link.b);
   return `
     <li class="${done ? 'done' : ''}">
       <span>${done ? '연결 완료' : '미확인'}</span>

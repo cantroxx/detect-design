@@ -1,4 +1,13 @@
-import { campaign, cases, firstCaseId, getCaseById, getCaseIndex, getNextCaseId } from '../domain/gameData.js';
+import {
+  campaign,
+  cases,
+  firstCaseId,
+  getCaseById,
+  getCaseHotspots,
+  getCaseIndex,
+  getEvidenceItems,
+  getNextCaseId
+} from '../domain/gameData.js';
 
 const emptyStyleScores = () =>
   Object.fromEntries(Object.keys(campaign.profiles).map((styleId) => [styleId, 0]));
@@ -99,8 +108,8 @@ function enterScene(state) {
 export function openHotspot(state, clueId) {
   const activeCase = getActiveCase(state);
   const progress = getCaseProgress(state);
-  const hotspot = activeCase.hotspots.find((item) => item.clueId === clueId);
-  const clue = activeCase.clues.find((item) => item.id === clueId);
+  const hotspot = getCaseHotspots(activeCase).find((item) => item.clueId === clueId);
+  const clue = getEvidenceItems(activeCase).find((item) => item.id === clueId);
   if (!hotspot || !clue) return state;
 
   if (progress.collected.includes(clueId)) {
@@ -159,7 +168,7 @@ export function advanceDialogue(state) {
 export function collectClue(state, clueId) {
   const activeCase = getActiveCase(state);
   const progress = getCaseProgress(state);
-  const clue = activeCase.clues.find((item) => item.id === clueId);
+  const clue = getEvidenceItems(activeCase).find((item) => item.id === clueId);
   if (!clue) return state;
   if (progress.collected.includes(clueId)) {
     return {
@@ -299,7 +308,7 @@ export function submitBriefing(state) {
 export function canOpenBoard(state) {
   const activeCase = getActiveCase(state);
   const progress = getCaseProgress(state);
-  return activeCase.clues.every((clue) => progress.collected.includes(clue.id));
+  return getEvidenceItems(activeCase).every((clue) => progress.collected.includes(clue.id));
 }
 
 export function isSolved(state) {
@@ -370,8 +379,10 @@ export function getDetectiveProfile(state) {
 export function resolveCampaignEnding(state) {
   const stats = state.campaignStats ?? emptyCampaignStats();
   if (stats.rumorRisk >= 3) return campaign.finalEndings.rumor;
+  if (stats.caution >= 8 && stats.rumorRisk <= 0) return campaign.finalEndings.guardian;
   if (stats.record >= 6 && stats.caution >= 3) return campaign.finalEndings.record;
   if (stats.empathy >= 8 && stats.teamwork >= 4) return campaign.finalEndings.teamwork;
+  if (stats.record >= 4 && stats.empathy >= 4 && stats.teamwork >= 4) return campaign.finalEndings.balanced;
   if (stats.empathy >= 6) return campaign.finalEndings.empathy;
   return campaign.finalEndings.growth;
 }
